@@ -99,5 +99,22 @@
     "goliathapp": "per-release",
     "domain": "none",
     "apply": "test-bed"
+  },
+  "operators": {
+    "session_source": "goliathapp_portal",
+    "app_base_url": "https://portal.example.com",
+    "required_roles": [
+      "GroundStation.Operator"
+    ],
+    "configurator": {
+      "required_roles": [
+        "GroundStation.Configurator"
+      ],
+      "public_base_url": "https://ground-config.example.com"
+    },
+    "opc_tag_tree_acl": {
+      "enforce": false,
+      "notes": "monitors[].tag_trees are inventory labels until Phase 3 RBAC enforcement."
+    }
   }
 }

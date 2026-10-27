@@ -7,6 +7,7 @@ GoliathApp specialization for launch-ops ground station: singleton rocket gatewa
 | Path | Purpose |
 | --- | --- |
 | [`docs/conversion-plan.md`](docs/conversion-plan.md) | Customer deliverables, architecture, phased checklist |
+| [`docs/operator-identity.md`](docs/operator-identity.md) | GoliathApp portal sessions vs worker sessions; deploy `operators` hooks |
 | [`deploy/`](deploy/) | Deploy topology, systemd stubs, customer **target profiles** |
 | [`deploy/targets/`](deploy/targets/) | `target.schema.json` + example JSON per site |
 | [`src/goliathgroundstation/`](src/goliathgroundstation/) | Thin Python product shell (will specialize GoliathApp) |
@@ -23,6 +24,7 @@ Each customer site is a JSON file under `deploy/targets/` validated by `target.s
 - **`monitors[]`** — inventory of OPC subscriber stations (LabVIEW, integration UIs). They subscribe; they do not claim leased GoliathApp tasks.
 - **Sibling services** — TMoIP, configurator web, batch exporter as systemd units on the gateway or separate hosts.
 - **Secrets** — only `secret:NAME` references in JSON; values live in env files on the host.
+- **`operators`** (optional) — required RBAC roles, portal session source (`goliathapp_portal`), Phase 3 OPC tag-tree ACL flag; uses `database.portal_role` for the `goliath_portal` DB login.
 
 See [`deploy/README.md`](deploy/README.md) for topology and validation commands.
 
@@ -34,6 +36,7 @@ python scripts/validate_deploy_target.py deploy/targets/goliath-ground-test.exam
 ## Docs
 
 - [Conversion plan](docs/conversion-plan.md) — deliverables, architecture (Mermaid), phases, and checklist
+- [Operator identity](docs/operator-identity.md) — portal RBAC for configurator operators; monitors are OPC clients, not workers ([GoliathApp RBAC](https://github.com/Goliath-Research/GoliathApp/blob/main/docs/rbac.md), [workers contrast](https://github.com/Goliath-Research/GoliathApp/blob/main/docs/workers.md))
 
 ## Related
 
