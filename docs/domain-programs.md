@@ -74,7 +74,7 @@ Patterns from [GoliathApp actions.md](https://github.com/Goliath-Research/Goliat
 2. Workers register **`capabilities`**; the gateway offers READY **ACTION** nodes whose `capability` matches.
 3. Claim returns **`input_json`**; submit returns **`result_code`** and **`output_json`**; SQL continues the instance.
 
-Ground-station handlers will live in a future worker package (not cloned from Astra in this slice).
+Ground-station **handler stubs** live in [`src/goliathgroundstation/workers/`](../src/goliathgroundstation/workers/) (`handle(action_name, input_json)` → stub `output_json`). Real buffer read, `testlog.it_event` flush, and Astra exporter ports are not implemented in this repository.
 
 ### Intended action catalog
 
@@ -112,9 +112,10 @@ The **`event_wait_ack`**-style `on:` / `wait:` blocks in Omics fixtures illustra
 | Program stubs | Done — [`domain_programs/`](../domain_programs/) |
 | Action catalog notes | Done — table above + `05_domain_action_catalog.sql` |
 | JSON schema smoke tests | Done — [`tests/test_domain_program_stubs.py`](../tests/test_domain_program_stubs.py) |
-| Workers implement handlers | **Not done** — awaits ground worker package |
+| Worker handler stubs | **Done** — [`workers/`](../src/goliathgroundstation/workers/), [`tests/test_worker_handlers.py`](../tests/test_worker_handlers.py) |
+| Real handler I/O (flush, export, promote) | **Not done** — stubs only |
 | Platform compile/seed programs | **Not done** |
-| Dual activation design (tier 2) | **In progress** — [dual-activation-tier2.md](dual-activation-tier2.md), [#3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3) |
+| Dual activation design (tier 2) | **Done** — [dual-activation-tier2.md](dual-activation-tier2.md), [#3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3) |
 | Dual activation wiring (edges + workers) | **Not done** |
 
 See also [conversion-plan.md](conversion-plan.md) customer checklist.

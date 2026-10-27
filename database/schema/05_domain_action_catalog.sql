@@ -13,7 +13,8 @@
 --   p_action_name := 'ground.it_event_flush_batch',
 --   p_capability := 'ground.it_event',
 --   p_execution_mode := 'in_process',
---   p_in_process_handler := 'goliath_ground_worker.handlers.it_event_flush_batch',
+--   p_in_process_handler := 'goliathgroundstation.workers.dispatch:handle',
+--   (or per-action thin wrappers; stub implementations under workers/handlers/)
 --   p_implementation_status := 'draft'
 -- );
 --
