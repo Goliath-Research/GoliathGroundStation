@@ -1,0 +1,21 @@
+[Unit]
+Description=GoliathGroundStation TMoIP minor-frame reassembly
+Documentation=https://github.com/Goliath-Research/GoliathGroundStation/blob/main/deploy/README.md
+After=network-online.target
+Wants=network-online.target
+Before=goliath-ground-gateway.service
+
+[Service]
+Type=simple
+User=__GOLIATH_USER__
+WorkingDirectory=__GOLIATH_INSTALL_ROOT__
+EnvironmentFile=-__GOLIATH_INSTALL_ROOT__/env/tmoip.env
+EnvironmentFile=-/etc/goliath/ground-secrets.env
+Environment=PATH=__GOLIATH_VENV__/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# ExecStart=__GOLIATH_VENV__/bin/goliath-ground-tmoip --config __GOLIATH_INSTALL_ROOT__/env/tmoip.env
+ExecStart=/bin/true
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

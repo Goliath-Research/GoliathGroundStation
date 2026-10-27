@@ -1,0 +1,436 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/Goliath-Research/GoliathGroundStation/deploy/targets/target.schema.json",
+  "title": "GoliathGroundStation deploy target",
+  "description": "Customer deploy profile for a singleton ground gateway (ingest → decode → OPC UA publish), optional N monitor stations (OPC subscribers only — not workflow workers), and sibling realtime/batch services.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "rollouts_environment",
+    "gateway",
+    "database"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rollouts_environment": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Cursor Rollouts environment id for this customer target."
+    },
+    "gateway": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Singleton ground gateway: one ingest/decode/OPC publish path per site. Not a methyl-style worker farm.",
+      "required": [
+        "hosts"
+      ],
+      "properties": {
+        "install_root": {
+          "type": "string",
+          "description": "Release root on the gateway host (venv, env, systemd drop-ins)."
+        },
+        "env_file": {
+          "type": "string",
+          "description": "Non-secret EnvironmentFile for the gateway unit (paths, bind addresses)."
+        },
+        "secrets_file": {
+          "type": "string",
+          "description": "Optional secrets EnvironmentFile (mode 0600). Values are never stored in the target JSON."
+        },
+        "user": {
+          "type": "string",
+          "description": "POSIX user for gateway and colocated sibling units."
+        },
+        "bind_host": {
+          "type": "string",
+          "description": "Loopback bind for the operator HTTP API on the gateway (configurator hooks, health)."
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "public_base_url": {
+          "type": "string",
+          "description": "Public URL for operator-facing HTTP in front of the gateway (TLS terminator or reverse proxy)."
+        },
+        "tls": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "self-signed",
+                "letsencrypt"
+              ]
+            },
+            "san_ip": {
+              "type": "string"
+            },
+            "domain": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            }
+          }
+        },
+        "opc": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Embedded OPC UA server published by the gateway after decode.",
+          "properties": {
+            "bind_host": {
+              "type": "string",
+              "default": "0.0.0.0"
+            },
+            "port": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535,
+              "default": 4840
+            },
+            "endpoint_path": {
+              "type": "string",
+              "description": "Path segment for opc.tcp endpoint (product-specific namespace)."
+            },
+            "application_uri": {
+              "type": "string"
+            }
+          }
+        },
+        "ingest": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Umbilical poll and/or UDP ingest in front of decode (exact wire format lives in the runtime release).",
+          "properties": {
+            "umbilical_poll_interval_ms": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "udp_listen_host": {
+              "type": "string"
+            },
+            "udp_listen_port": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            }
+          }
+        },
+        "hosts": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 1,
+          "description": "Exactly one SSH target for the singleton gateway host.",
+          "items": {
+            "$ref": "#/definitions/sshHost"
+          }
+        },
+        "services": {
+          "$ref": "#/definitions/gatewaySiblingServices"
+        }
+      }
+    },
+    "monitors": {
+      "type": "array",
+      "description": "Inventory of monitor stations (LabVIEW, integration UIs, third-party OPC clients). They subscribe to OPC variables; they do not claim GoliathApp workflow tasks.",
+      "items": {
+        "$ref": "#/definitions/monitorStation"
+      }
+    },
+    "services": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Sibling long-running units when not colocated on the gateway host. Omitted keys default to gateway.services.",
+      "properties": {
+        "tmoip": {
+          "$ref": "#/definitions/tmoipService"
+        },
+        "web": {
+          "$ref": "#/definitions/webService"
+        },
+        "exporter": {
+          "$ref": "#/definitions/exporterService"
+        }
+      }
+    },
+    "database": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "host",
+        "dbname",
+        "user"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "postgres",
+            "neon"
+          ]
+        },
+        "project": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        },
+        "host": {
+          "type": "string"
+        },
+        "schema_host": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer"
+        },
+        "dbname": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string"
+        },
+        "password": {
+          "$ref": "#/definitions/secretRef"
+        },
+        "sslmode": {
+          "type": "string"
+        },
+        "channel_binding": {
+          "type": "string"
+        },
+        "gateway_role": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "user": {
+              "type": "string",
+              "default": "goliath_gateway"
+            },
+            "password": {
+              "$ref": "#/definitions/secretRef"
+            }
+          }
+        },
+        "portal_role": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "user": {
+              "type": "string",
+              "default": "goliath_portal"
+            },
+            "password": {
+              "$ref": "#/definitions/secretRef"
+            }
+          }
+        }
+      }
+    },
+    "schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "apply": {
+          "type": "string",
+          "enum": [
+            "test-bed",
+            "none"
+          ]
+        },
+        "goliathapp": {
+          "type": "string",
+          "enum": [
+            "per-release",
+            "none"
+          ],
+          "default": "per-release",
+          "description": "Apply GoliathApp sql_pg on first deploy of each release when per-release."
+        },
+        "domain": {
+          "type": "string",
+          "enum": [
+            "none",
+            "per-release"
+          ],
+          "default": "none",
+          "description": "Ground-station domain SQL (config/testlog). Phase 3; none until this repo ships domain migrations."
+        }
+      }
+    }
+  },
+  "definitions": {
+    "secretRef": {
+      "type": "string",
+      "pattern": "^secret:[A-Za-z_][A-Za-z0-9_]*$",
+      "description": "Name of an environment variable or /etc/goliath/.env entry. Never a secret value."
+    },
+    "sshHost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "ssh"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "ssh": {
+          "type": "string",
+          "description": "user@host passed to ssh. Not a secret."
+        },
+        "port": {
+          "type": "integer"
+        },
+        "identity_file": {
+          "type": "string",
+          "description": "Path to a private key, or secret:NAME whose value is that key."
+        },
+        "arch": {
+          "type": "string",
+          "enum": [
+            "aarch64",
+            "amd64"
+          ]
+        }
+      }
+    },
+    "monitorStation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "type": "string",
+          "description": "Human label (engine bay, vehicle bus, customer integration, etc.)."
+        },
+        "ssh": {
+          "type": "string",
+          "description": "Optional inventory SSH for the LabVIEW or integration host. Deploy does not start a worker here."
+        },
+        "opc_endpoint": {
+          "type": "string",
+          "description": "opc.tcp URL this station uses to subscribe. Typically the gateway OPC listener."
+        },
+        "tag_trees": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Future RBAC: which OPC subtrees this station may read (Phase 3)."
+        }
+      }
+    },
+    "gatewaySiblingServices": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tmoip": {
+          "$ref": "#/definitions/tmoipService"
+        },
+        "web": {
+          "$ref": "#/definitions/webService"
+        },
+        "exporter": {
+          "$ref": "#/definitions/exporterService"
+        }
+      }
+    },
+    "tmoipService": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "env_file": {
+          "type": "string"
+        },
+        "listen_host": {
+          "type": "string"
+        },
+        "listen_port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "hosts": {
+          "type": "array",
+          "description": "When omitted, runs on the singleton gateway host.",
+          "items": {
+            "$ref": "#/definitions/sshHost"
+          }
+        }
+      }
+    },
+    "webService": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "env_file": {
+          "type": "string"
+        },
+        "bind_host": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "public_base_url": {
+          "type": "string"
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/sshHost"
+          }
+        }
+      }
+    },
+    "exporterService": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Batch test-log export (DomainProgram later). Not on the live OPC telemetry path.",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "env_file": {
+          "type": "string"
+        },
+        "schedule": {
+          "type": "string",
+          "description": "systemd timer calendar expression when exporter is timer-driven."
+        },
+        "hosts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/sshHost"
+          }
+        }
+      }
+    }
+  }
+}

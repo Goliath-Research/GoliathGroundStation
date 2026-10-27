@@ -1,0 +1,17 @@
+[Unit]
+Description=GoliathGroundStation batch test-log exporter (not live OPC)
+Documentation=https://github.com/Goliath-Research/GoliathGroundStation/blob/main/deploy/README.md
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=__GOLIATH_USER__
+WorkingDirectory=__GOLIATH_INSTALL_ROOT__
+EnvironmentFile=-__GOLIATH_INSTALL_ROOT__/env/exporter.env
+EnvironmentFile=-/etc/goliath/ground-secrets.env
+Environment=PATH=__GOLIATH_VENV__/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# ExecStart=__GOLIATH_VENV__/bin/goliath-ground-exporter run-once
+ExecStart=/bin/true
+
+[Install]
+WantedBy=multi-user.target

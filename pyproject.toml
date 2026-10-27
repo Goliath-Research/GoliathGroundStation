@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "goliathgroundstation"
+version = "0.1.0"
+description = "GoliathApp specialization for launch-ops ground station (packaging shell; runtime migrates in later phases)."
+readme = "README.md"
+requires-python = ">=3.10,<3.15"
+license = "MIT"
+authors = [{ name = "Goliath Research" }]
+keywords = ["ground-station", "opc-ua", "goliath", "launch-ops"]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["jsonschema>=4.20,<5"]
+
+[project.scripts]
+goliath-ground = "goliathgroundstation.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/goliathgroundstation"]

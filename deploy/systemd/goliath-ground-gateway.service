@@ -1,0 +1,22 @@
+[Unit]
+Description=GoliathGroundStation singleton ground gateway (ingest, decode, OPC UA)
+Documentation=https://github.com/Goliath-Research/GoliathGroundStation/blob/main/deploy/README.md
+After=network-online.target goliath-ground-tmoip.service
+Wants=network-online.target
+# TMoIP is optional; gateway may start without it when ingest is umbilical-only.
+
+[Service]
+Type=simple
+User=__GOLIATH_USER__
+WorkingDirectory=__GOLIATH_INSTALL_ROOT__
+EnvironmentFile=-__GOLIATH_INSTALL_ROOT__/env/gateway.env
+EnvironmentFile=-/etc/goliath/ground-secrets.env
+Environment=PATH=__GOLIATH_VENV__/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# ExecStart is set by the release installer from the packaged console script, e.g.:
+# ExecStart=__GOLIATH_VENV__/bin/goliath-ground-gateway --config __GOLIATH_INSTALL_ROOT__/env/gateway.env
+ExecStart=/bin/true
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

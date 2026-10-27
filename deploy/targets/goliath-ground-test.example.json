@@ -1,0 +1,103 @@
+{
+  "name": "goliath-ground-test",
+  "rollouts_environment": "goliath-ground-test",
+  "gateway": {
+    "install_root": "/opt/goliath-ground",
+    "env_file": "/opt/goliath-ground/env/gateway.env",
+    "secrets_file": "/etc/goliath/ground-secrets.env",
+    "user": "goliath",
+    "bind_host": "127.0.0.1",
+    "port": 8080,
+    "public_base_url": "https://ground-gateway.example.com",
+    "tls": {
+      "mode": "self-signed",
+      "san_ip": "203.0.113.10"
+    },
+    "opc": {
+      "bind_host": "0.0.0.0",
+      "port": 4840,
+      "endpoint_path": "/ground",
+      "application_uri": "urn:goliath:ground-station:test"
+    },
+    "ingest": {
+      "umbilical_poll_interval_ms": 100,
+      "udp_listen_host": "0.0.0.0",
+      "udp_listen_port": 5004
+    },
+    "hosts": [
+      {
+        "name": "ground-gateway",
+        "ssh": "ubuntu@ground-gateway.example.com",
+        "arch": "amd64"
+      }
+    ],
+    "services": {
+      "tmoip": {
+        "enabled": true,
+        "env_file": "/opt/goliath-ground/env/tmoip.env",
+        "listen_host": "0.0.0.0",
+        "listen_port": 5000
+      },
+      "web": {
+        "enabled": true,
+        "env_file": "/opt/goliath-ground/env/web.env",
+        "bind_host": "127.0.0.1",
+        "port": 8000,
+        "public_base_url": "https://ground-config.example.com"
+      },
+      "exporter": {
+        "enabled": true,
+        "env_file": "/opt/goliath-ground/env/exporter.env",
+        "schedule": "daily"
+      }
+    }
+  },
+  "monitors": [
+    {
+      "name": "engine-bay-a",
+      "role": "Engine bay variables",
+      "ssh": "labview@monitor-engine-a.example.com",
+      "opc_endpoint": "opc.tcp://ground-gateway.example.com:4840/ground",
+      "tag_trees": [
+        "Vehicle/Engines/A"
+      ]
+    },
+    {
+      "name": "vehicle-guidance",
+      "role": "Guidance and navigation",
+      "opc_endpoint": "opc.tcp://ground-gateway.example.com:4840/ground",
+      "tag_trees": [
+        "Vehicle/Guidance"
+      ]
+    },
+    {
+      "name": "customer-integration",
+      "role": "Third-party integration UI",
+      "opc_endpoint": "opc.tcp://ground-gateway.example.com:4840/ground"
+    }
+  ],
+  "database": {
+    "kind": "neon",
+    "project": "neon-project-placeholder",
+    "branch": "main",
+    "host": "ep-placeholder.region.aws.neon.tech",
+    "port": 5432,
+    "dbname": "goliath_ground",
+    "user": "goliath",
+    "password": "secret:NEON_GROUND_PASSWORD",
+    "sslmode": "require",
+    "gateway_role": {
+      "user": "goliath_gateway",
+      "password": "secret:GOLIATH_GATEWAY_DB_PASSWORD"
+    },
+    "portal_role": {
+      "user": "goliath_portal",
+      "password": "secret:GOLIATH_PORTAL_DB_PASSWORD"
+    }
+  },
+  "schema": {
+    "goliathapp": "per-release",
+    "domain": "none",
+    "apply": "test-bed"
+  }
+}
