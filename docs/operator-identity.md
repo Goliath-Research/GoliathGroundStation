@@ -1,6 +1,6 @@
 # Operator identity (GoliathApp RBAC)
 
-How **human operators** authenticate for GoliathGroundStation: portal sessions and RBAC from [GoliathApp](https://github.com/Goliath-Research/GoliathApp), not worker gateway sessions. This document is the public Phase 2 design slice; enforcement hooks land in later releases.
+How **human operators** authenticate for GoliathGroundStation: portal sessions and RBAC from [GoliathApp](https://github.com/Goliath-Research/GoliathApp), not worker gateway sessions. Phase 3 adds library enforcement (session middleware + OPC tag-tree ACL helpers); sibling **goliath-ground-web** still mounts the live FastAPI app until that service imports this package.
 
 ## What operators do here
 
@@ -40,9 +40,12 @@ Permissions are Meta object + operation pairs (`"RBAC"."Permissions"`). Ground-s
 
 ## OPC monitors and tag trees (Phase 3)
 
-Deploy targets already inventory monitors under `monitors[]` with optional `tag_trees[]` labels. **Phase 2 does not enforce** those trees at the OPC server. Phase 3 will map RBAC scopes or roles to allowed OPC namespaces and align with `monitors[].tag_trees` for audit and policy.
+Deploy targets inventory monitors under `monitors[]` with optional `tag_trees[]` labels. **`goliathgroundstation.opc_tag_tree_acl.OpcTagTreeAcl`** maps that inventory (plus optional `role_tag_trees` overrides) to allowed OPC namespace prefixes. Set `operators.opc_tag_tree_acl.enforce` to:
 
-Until then, treat `tag_trees` as **documentation for operators and RBAC designers**, not runtime ACL.
+- **`false`** — inventory and audit only; denied reads set `would_deny` on the decision object but do not raise.
+- **`true`** — reads outside allowed trees raise `OpcTagTreeAccessDeniedError` (wire into the embedded OPC server in the runtime release).
+
+RBAC role names on the resolved portal session can narrow trees when you pass a `role_tag_trees` map; domain SQL may add first-class role→tree mappings later.
 
 ## Deploy profile hooks
 
@@ -55,7 +58,7 @@ Customer targets (`deploy/targets/*.json`) express operator policy beside gatewa
 | `operators.app_base_url` | Optional public base URL for the GoliathApp BFF used to resolve sessions in front of configurator HTTP (TLS terminator or shared portal host). |
 | `operators.required_roles` | Role names every ground-station operator must hold (site-wide minimum). |
 | `operators.configurator.required_roles` | Optional stricter role set for configurator / test-campaign HTTP only. |
-| `operators.opc_tag_tree_acl` | `enforce: false` in Phase 2; set `enforce: true` when Phase 3 enforcement ships. |
+| `operators.opc_tag_tree_acl` | `enforce: false` for audit-only; `enforce: true` to reject OPC paths outside `monitors[].tag_trees`. |
 
 Planned **environment variables** (names only — values are `secret:NAME` or host env files, never in git):
 
@@ -73,11 +76,50 @@ Systemd stubs under `deploy/systemd/` do not yet inject these; a future `deploy_
 | --- | --- |
 | `docs/operator-identity.md` (this file) | **Landed** — public contract |
 | `deploy/targets/target.schema.json` `operators` block | **Landed** — declarative policy |
-| `goliathgroundstation.operator_identity` | **Stub** — no network/DB calls yet |
-| Configurator session middleware | **Pending** — requires runtime migration off private Astra |
-| OPC tag-tree enforcement | **Phase 3** |
+| `goliathgroundstation.operator_identity` | **Landed** — portal session resolve/validate, role gates, ASGI middleware |
+| `goliathgroundstation.opc_tag_tree_acl` | **Landed** — enforce on/off policy helper |
+| Configurator session middleware | **Library landed** — mount on sibling **goliath-ground-web** FastAPI/Starlette app |
+| Live FastAPI mount in this repo | **Pending** — configurator HTTP still ships from sibling web until Phase 4 portal shell |
 
-Optional Python dependency: when [GoliathApp](https://github.com/Goliath-Research/GoliathApp) publishes a installable client for `portal.fn_session_resolve`, this package may add an **optional** `goliathapp` extra. Until then, integrators call their existing BFF or database boundary consistent with GoliathOmics.
+Resolve sessions with **`PostgresPortalSessionResolver`** (`portal.fn_session_resolve` + `"RBAC".usp_session_get_effective_roles_v2` on `GOLIATH_PORTAL_DB_URL`) and/or **`HttpPortalSessionResolver`** when `operators.app_base_url` is set. Fail closed on missing or expired tokens.
+
+Optional Python dependency: when [GoliathApp](https://github.com/Goliath-Research/GoliathApp) publishes a installable client for `portal.fn_session_resolve`, this package may add an **optional** `goliathapp` extra. Until then, use the resolvers above or your existing BFF.
+
+### Mounting configurator session middleware
+
+Sibling **goliath-ground-web** (or any Starlette/FastAPI ASGI app) can wrap routes after loading the deploy target `operators` block:
+
+```python
+import json
+from goliathgroundstation.operator_identity import (
+    OperatorSessionMiddleware,
+    OperatorSessionPolicy,
+    build_portal_session_resolver,
+)
+
+def portal_connection_factory():
+    import psycopg  # integrator-provided driver
+    return psycopg.connect(os.environ["GOLIATH_PORTAL_DB_URL"])
+
+with open("deploy/targets/customer.json") as f:
+    target = json.load(f)
+
+policy = OperatorSessionPolicy.from_operators_block(target.get("operators"))
+resolver = build_portal_session_resolver(
+    policy,
+    connection_factory=portal_connection_factory,
+)
+
+app = OperatorSessionMiddleware(
+    existing_app,
+    policy=policy,
+    resolver=resolver,
+    surface="configurator",
+    exempt_paths=("/health", "/healthz"),
+)
+```
+
+Inside handlers, read `scope["state"]["operator_session"]` or `get_current_operator_session()`. Pair with `build_opc_tag_tree_acl(target["monitors"], policy)` at the OPC publish boundary when enforcement is enabled.
 
 ## Related docs
 

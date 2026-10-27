@@ -268,7 +268,7 @@
     "operators": {
       "type": "object",
       "additionalProperties": false,
-      "description": "Operator identity via GoliathApp portal sessions and RBAC — not worker gateway sessions. Tag-tree ACL enforcement is Phase 3.",
+      "description": "Operator identity via GoliathApp portal sessions and RBAC — not worker gateway sessions. Tag-tree ACL enforced when opc_tag_tree_acl.enforce is true (see goliathgroundstation.opc_tag_tree_acl).",
       "properties": {
         "session_source": {
           "type": "string",
@@ -313,7 +313,7 @@
         "opc_tag_tree_acl": {
           "type": "object",
           "additionalProperties": false,
-          "description": "Future mapping from RBAC to monitors[].tag_trees. Inventory-only until Phase 3.",
+          "description": "Mapping from monitors[].tag_trees to allowed OPC namespaces; enforce toggles audit-only vs reject.",
           "properties": {
             "enforce": {
               "type": "boolean",
