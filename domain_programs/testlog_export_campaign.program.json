@@ -1,0 +1,53 @@
+{
+  "programVersion": 2,
+  "name": "GroundTestlogExportCampaign",
+  "description": "STUB: Batch test-log export campaign (successor to astra.exporter systemd jobs). Reads config scope, writes legacy testlog l2r_*/r2l_* layout and optional it_event correlation. Live OPC telemetry is not exported through this graph.",
+  "projectPath": "${var.groundProjectPath}",
+  "variables": {
+    "groundProjectPath": {
+      "schemaRef": "schemas/vars/string.schema.json",
+      "description": "Campaign project / site config path"
+    },
+    "testId": {
+      "schemaRef": "schemas/vars/int.schema.json",
+      "description": "config test id when export is scoped to one run"
+    },
+    "exportProfile": {
+      "schemaRef": "schemas/vars/string.schema.json",
+      "description": "Named exporter profile (tables, rate limits) from deploy target"
+    }
+  },
+  "phases": [
+    {
+      "name": "export",
+      "steps": [
+        {
+          "action": "ground.testlog_export_prepare",
+          "node_key": "export_prepare",
+          "with": {
+            "testId": "${var.testId}",
+            "exportProfile": "${var.exportProfile}"
+          }
+        },
+        {
+          "action": "ground.testlog_export_run",
+          "node_key": "export_run",
+          "with": {
+            "planRef": "${ctx.export_prepare.planRef}"
+          },
+          "out": {
+            "rowCounts": "$.rowCounts"
+          }
+        },
+        {
+          "action": "ground.testlog_export_finalize",
+          "node_key": "export_finalize",
+          "with": {
+            "planRef": "${ctx.export_prepare.planRef}",
+            "rowCounts": "${ctx.export_run.rowCounts}"
+          }
+        }
+      ]
+    }
+  ]
+}

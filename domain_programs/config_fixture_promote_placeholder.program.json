@@ -1,0 +1,50 @@
+{
+  "programVersion": 2,
+  "name": "GroundConfigFixturePromote",
+  "description": "STUB: Placeholder for config fixture apply and site-to-site promote campaigns. Does not replace the live configurator API or OPC gateway; batch validation and promote only.",
+  "projectPath": "${var.groundProjectPath}",
+  "variables": {
+    "groundProjectPath": {
+      "schemaRef": "schemas/vars/string.schema.json",
+      "description": "Site project path"
+    },
+    "fixtureName": {
+      "schemaRef": "schemas/vars/string.schema.json",
+      "description": "Named oracle/fixture bundle under the project"
+    },
+    "promoteTargetSite": {
+      "schemaRef": "schemas/vars/string.schema.json",
+      "description": "Destination site id when promote step runs"
+    }
+  },
+  "phases": [
+    {
+      "name": "fixture",
+      "steps": [
+        {
+          "action": "ground.config_fixture_apply",
+          "node_key": "fixture_apply",
+          "with": {
+            "fixtureName": "${var.fixtureName}"
+          },
+          "out": {
+            "validationReportRef": "$.validationReportRef"
+          }
+        }
+      ]
+    },
+    {
+      "name": "promote",
+      "steps": [
+        {
+          "action": "ground.config_promote_site",
+          "node_key": "promote_site",
+          "with": {
+            "targetSite": "${var.promoteTargetSite}",
+            "validationReportRef": "${ctx.fixture_apply.validationReportRef}"
+          }
+        }
+      ]
+    }
+  ]
+}

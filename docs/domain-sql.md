@@ -14,7 +14,7 @@ Live telemetry (singleton gateway → OPC UA) does **not** use GoliathApp claim/
 ## Schemas
 
 - **`config`** — vehicle/packet/server configuration (legacy SQL Server `AstraConfig`).
-- **`testlog`** — exported test rows and related objects (legacy `AstraTestLog`).
+- **`testlog`** — exported test rows and related objects (legacy `AstraTestLog`), plus **`testlog.it_event`** for durable sensor/actuator/system I&T events ([`04_it_event_log.sql`](../database/schema/04_it_event_log.sql), [domain-programs.md](domain-programs.md)).
 
 Collations `config.mssql_order` and `testlog.mssql_order` require ICU (`und-u-ka-noignore`) so field ordering matches the historical SQL Server layout. Use PostgreSQL 16+ builds with ICU (Ubuntu 24.04 packages, official `postgres:16` images).
 
@@ -29,6 +29,8 @@ Domain files live under [`database/schema/`](../database/schema/):
 1. `00_provenance.sql` — comments only  
 2. `01_schema.sql` — tables and keys  
 3. `03_programmability.sql` — views, functions, trigger  
+4. `04_it_event_log.sql` — I&T event log (`testlog.it_event`)  
+5. `05_domain_action_catalog.sql` — action seed notes (comments only)  
 
 `02_data.sql` is intentionally absent from git (data dump; may contain passwords). Do not add it to the repository.
 
@@ -68,7 +70,7 @@ Example test target sets `domain` to `per-release` once domain SQL ships in this
 
 ## Operator identity and RBAC
 
-Human operators authenticate through **GoliathApp portal sessions** (`database.portal_role`). Ground-station-specific Meta permissions and OPC tag-tree ACL enforcement are **later Phase 3** work; this slice only moves DDL ownership and apply tooling. See [operator-identity.md](operator-identity.md).
+Human operators authenticate through **GoliathApp portal sessions** (`database.portal_role`). Session middleware and OPC tag-tree ACL helpers live in [`goliathgroundstation.operator_identity`](../src/goliathgroundstation/operator_identity.py) and [`opc_tag_tree_acl`](../src/goliathgroundstation/opc_tag_tree_acl.py); mounting on sibling **goliath-ground-web** is still pending. See [operator-identity.md](operator-identity.md).
 
 ## Migration from Astra
 
@@ -76,4 +78,4 @@ DDL was copied from public [astra-ground-station-py](https://github.com/Goliath-
 
 - **In scope:** faithful PostgreSQL scripts, ordered apply, documentation.  
 - **Out of scope (day one):** rewriting ~350KB of config schema into GoliathApp Meta; porting Python services; GoliathApp workers on the live OPC path.  
-- **Phase 3 (required):** DomainPrograms for sensor/actuator event logging and export / fixture / promote campaigns — see [conversion-plan.md](conversion-plan.md). Incremental migrations authored in this repo.
+- **Phase 3 (required):** DomainPrograms for sensor/actuator event logging and export / fixture / promote campaigns — design in [domain-programs.md](domain-programs.md) ([#8](https://github.com/Goliath-Research/GoliathGroundStation/issues/8)); workers and platform compile/seed still pending. Incremental migrations authored in this repo.

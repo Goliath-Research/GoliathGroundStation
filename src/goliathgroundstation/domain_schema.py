@@ -1,7 +1,8 @@
 """Apply ``database/schema/*.sql`` with ``psql`` (Astra baseline, GoliathGroundStation-owned).
 
-Lexical order loads ``00_provenance.sql``, then ``01_schema.sql``, then
-``03_programmability.sql``. ``02_data.sql`` is refused (data dump, not in git).
+Lexical order loads ``00_provenance.sql``, ``01_schema.sql``,
+``03_programmability.sql``, ``04_it_event_log.sql``, and
+``05_domain_action_catalog.sql``. ``02_data.sql`` is refused (data dump, not in git).
 """
 
 from __future__ import annotations

@@ -196,7 +196,7 @@ Status as of the plan date — mark done when a phase ships.
 - [x] Deploy profile: singleton gateway + OPC + N monitors (Phase 2)
 - [x] Operator identity via GoliathApp RBAC (Phase 2–3) — [operator-identity](operator-identity.md) + deploy `operators` block; **library** session middleware + OPC tag-tree ACL (`goliathgroundstation.operator_identity`, `opc_tag_tree_acl`); live mount on sibling **goliath-ground-web** FastAPI still pending
 - [x] Domain SQL ownership for config / testlog (Phase 3) — [`database/schema/`](../database/schema/), [`docs/domain-sql.md`](domain-sql.md), [`scripts/apply_domain_schema.sh`](../scripts/apply_domain_schema.sh)
-- [ ] **Required** DomainPrograms (Phase 3): sensor/actuator event logging plus export / fixture / promote campaigns — not live OPC
+- [ ] **Required** DomainPrograms (Phase 3): sensor/actuator event logging plus export / fixture / promote campaigns — **partial:** [domain-programs design](domain-programs.md), `testlog.it_event` DDL, [`domain_programs/`](../domain_programs/) stubs ([#8](https://github.com/Goliath-Research/GoliathGroundStation/issues/8)); workers + platform seed still pending — not live OPC
 - [ ] Dual activation **tier 1** — GoliathApp + `goliath-gateway`: notify via pub/sub, own via claim ([GoliathApp #22](https://github.com/Goliath-Research/GoliathApp/issues/22); [GoliathOmics #67](https://github.com/Goliath-Research/GoliathOmics/issues/67) spike)
 - [ ] Dual activation **tier 2** — GoliathGroundStation on tier 1: product-specific DomainPrograms / event batch ([GoliathGroundStation #3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3))
 - [ ] Portal UI: global GoliathApp shell + Ground Station–specific views (Phase 4; blocked on global App UI)

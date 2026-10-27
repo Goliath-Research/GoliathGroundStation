@@ -1,0 +1,47 @@
+{
+  "programVersion": 2,
+  "name": "GroundItEventLogger",
+  "description": "STUB: Batch flush of buffered I&T sensor/actuator/system events into testlog.it_event. Not live OPC — gateway may enqueue samples; this program runs on worker claim (timer or manual campaign). Dual pub/sub wake is out of scope until GoliathApp #22 / GGS #3.",
+  "projectPath": "${var.groundProjectPath}",
+  "variables": {
+    "groundProjectPath": {
+      "schemaRef": "schemas/vars/string.schema.json",
+      "description": "Deploy target project root or configurator campaign path"
+    },
+    "campaignId": {
+      "schemaRef": "schemas/vars/string.schema.json",
+      "description": "UUID string correlating flush batches and it_event.campaign_id"
+    },
+    "maxBatchRows": {
+      "schemaRef": "schemas/vars/int.schema.json",
+      "description": "Upper bound on rows per flush action invocation"
+    }
+  },
+  "phases": [
+    {
+      "name": "it_event_capture",
+      "steps": [
+        {
+          "action": "ground.it_event_collect_buffered",
+          "node_key": "collect_buffered",
+          "with": {
+            "campaignId": "${var.campaignId}",
+            "maxRows": "${var.maxBatchRows}"
+          }
+        },
+        {
+          "action": "ground.it_event_flush_batch",
+          "node_key": "flush_batch",
+          "with": {
+            "campaignId": "${var.campaignId}",
+            "stagingRef": "${ctx.collect_buffered.stagingRef}"
+          },
+          "out": {
+            "ingestBatchId": "$.ingestBatchId",
+            "rowsWritten": "$.rowsWritten"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -39,6 +39,8 @@ SCRIPTS=(
   00_provenance.sql
   01_schema.sql
   03_programmability.sql
+  04_it_event_log.sql
+  05_domain_action_catalog.sql
 )
 
 for name in "${SCRIPTS[@]}"; do
