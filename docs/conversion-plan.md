@@ -168,7 +168,7 @@ GoliathApp workers wait for leased ACTION nodes. The ground gateway does not. It
 | Tier | Scope | Pattern | Tracking |
 | --- | --- | --- | --- |
 | **1 (first)** | GoliathApp + `goliath-gateway` | Shared **notify via pub/sub, own via claim** | [GoliathApp #22](https://github.com/Goliath-Research/GoliathApp/issues/22) |
-| **2 (second)** | GoliathGroundStation on tier 1 | Product-specific DomainPrograms and batch/event hooks | [GoliathGroundStation #3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3) |
+| **2 (second)** | GoliathGroundStation on tier 1 | Product-specific DomainPrograms and batch/event hooks | [GoliathGroundStation #3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3); design: [dual-activation-tier2.md](dual-activation-tier2.md) |
 
 [GoliathOmics #67](https://github.com/Goliath-Research/GoliathOmics/issues/67) remains a spike for the same platform pattern in genomics. Umbilical poll remains the safety net for ingest timing on the ground path.
 
@@ -198,7 +198,7 @@ Status as of the plan date — mark done when a phase ships.
 - [x] Domain SQL ownership for config / testlog (Phase 3) — [`database/schema/`](../database/schema/), [`docs/domain-sql.md`](domain-sql.md), [`scripts/apply_domain_schema.sh`](../scripts/apply_domain_schema.sh)
 - [ ] **Required** DomainPrograms (Phase 3): sensor/actuator event logging plus export / fixture / promote campaigns — **partial:** [domain-programs design](domain-programs.md), `testlog.it_event` DDL, [`domain_programs/`](../domain_programs/) stubs ([#8](https://github.com/Goliath-Research/GoliathGroundStation/issues/8)); workers + platform seed still pending — not live OPC
 - [ ] Dual activation **tier 1** — GoliathApp + `goliath-gateway`: notify via pub/sub, own via claim ([GoliathApp #22](https://github.com/Goliath-Research/GoliathApp/issues/22); [GoliathOmics #67](https://github.com/Goliath-Research/GoliathOmics/issues/67) spike)
-- [ ] Dual activation **tier 2** — GoliathGroundStation on tier 1: product-specific DomainPrograms / event batch ([GoliathGroundStation #3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3))
+- [ ] Dual activation **tier 2** — GoliathGroundStation on tier 1: product-specific DomainPrograms / event batch ([GoliathGroundStation #3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3)) — **design in progress:** [dual-activation-tier2.md](dual-activation-tier2.md); configurator/exporter `worker_wake` wiring and ground workers not done
 - [ ] Portal UI: global GoliathApp shell + Ground Station–specific views (Phase 4; blocked on global App UI)
 
 **Pitch line.** Same GoliathApp foundation as our genomics product — specialized for launch ops — with a singleton rocket gateway and OPC fan-out to as many monitor stations as your engines and vehicle require.
