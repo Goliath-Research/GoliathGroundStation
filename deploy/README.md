@@ -29,7 +29,7 @@ This is **not** the GoliathOmics pattern of a gateway plus a farm of workflow wo
 | Monitor station | **N** (engines, variables) | No — OPC clients only |
 | TMoIP / web / exporter | 0–3 units | No — long-running or batch siblings |
 
-Operator identity and RBAC come from **GoliathApp portal sessions** (not worker gateway sessions). Declarative policy lives in the target’s optional **`operators`** block and [`database.portal_role`](../deploy/targets/target.schema.json); see [operator identity](../docs/operator-identity.md). Domain SQL for `config` / `testlog` lives in [`database/schema/`](../database/schema/) with [`scripts/apply_domain_schema.sh`](../scripts/apply_domain_schema.sh) (target `schema.domain`: `per-release`). Optional **DomainPrograms** may own export campaigns later; they do not replace the live OPC path.
+Operator identity and RBAC come from **GoliathApp portal sessions** (not worker gateway sessions). Declarative policy lives in the target’s optional **`operators`** block and [`database.portal_role`](../deploy/targets/target.schema.json); see [operator identity](../docs/operator-identity.md). Domain SQL for `config` / `testlog` lives in [`database/schema/`](../database/schema/) with [`scripts/apply_domain_schema.sh`](../scripts/apply_domain_schema.sh) (target `schema.domain`: `per-release`). **DomainPrograms** (required in Phase 3) own sensor/actuator event logging and export campaigns; they do not replace the live OPC path. See [conversion-plan.md](../docs/conversion-plan.md).
 
 ## Deploy targets
 
