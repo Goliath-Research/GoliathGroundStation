@@ -26,7 +26,7 @@ SET search_path = config;
 --   ORDER BY x  -> ORDER BY x NULLS FIRST  (SQL Server sorts NULLs first ascending, PG sorts them last by default)
 
 -- dbo.[Links Viewer]  (SSMA for Access)
-CREATE VIEW "links viewer" AS
+CREATE OR REPLACE VIEW "links viewer" AS
 SELECT links.*, stage.stage, area_list.area_name, areas.ordering
 FROM board
    INNER JOIN ((stage
@@ -40,7 +40,7 @@ FROM board
 ORDER BY stage.stage NULLS FIRST, areas.ordering NULLS FIRST, board.id NULLS FIRST, links.c1_first_pin NULLS FIRST;
 
 -- dbo.[Links and Names]  (SSMA for Access)
-CREATE VIEW "links and names" AS
+CREATE OR REPLACE VIEW "links and names" AS
 SELECT links.c2_first_pin, links.c2_type_id, links.board_id, links.c1_first_pin, links.c1_type_id,
        links.link_type_id, links.area_id, names.link_description, names.short_name
 FROM names
@@ -48,7 +48,7 @@ FROM names
    ON names.id = links.names_id;
 
 -- dbo.Pinout_Details  (SSMA for Access)
-CREATE VIEW pinout_details AS
+CREATE OR REPLACE VIEW pinout_details AS
 SELECT stage.stage, area_list.area_name, board.board_connector, links.c1_first_pin,
        connectors_1."conn part no" AS c1, names.link_description, names.short_name,
        connectors."conn part no" AS c2, links.c2_first_pin
@@ -70,7 +70,7 @@ FROM stage
 ORDER BY area_list.area_order NULLS FIRST, stage.stage_order NULLS FIRST, board."order" NULLS FIRST, links.c1_first_pin NULLS FIRST;
 
 -- dbo.Pinouts  (SSMA for Access)
-CREATE VIEW pinouts AS
+CREATE OR REPLACE VIEW pinouts AS
 SELECT names.link_description, names.short_name, stage.stage, area_list.area_name, board.board_connector,
        links.c1_first_pin, connectors."conn part no" AS c1type
 FROM stage
@@ -89,7 +89,7 @@ FROM stage
 ORDER BY stage.id NULLS FIRST, areas.ordering NULLS FIRST, area_list.area_name NULLS FIRST, board.board_connector NULLS FIRST, links.c1_first_pin NULLS FIRST;
 
 -- dbo.View_1
-CREATE VIEW view_1 AS
+CREATE OR REPLACE VIEW view_1 AS
 SELECT a.name AS area, b.name AS board, c.firstpin, i.name AS interface, c.shortname, c.description, c.id AS connectionid
 FROM connections AS c
    INNER JOIN treeversions AS b ON c.boardid = b.id
@@ -100,7 +100,7 @@ WHERE (i.iconid = 6 OR i.iconid = 7) AND (h.iconid = 8) AND (a.iconid = 9) AND (
 ORDER BY a.seq NULLS FIRST, a.name NULLS FIRST, b.name NULLS FIRST, b.seq NULLS FIRST, c.firstpin NULLS FIRST;
 
 -- dbo.View_2
-CREATE VIEW view_2 AS
+CREATE OR REPLACE VIEW view_2 AS
 SELECT c.boardid, m.connectionid
 FROM treeversions AS i
    INNER JOIN vartypes AS r ON i.id = r.scopeid
@@ -113,7 +113,7 @@ FROM treeversions AS i
 WHERE (i.id = 7) AND (m.fieldid = 235);
 
 -- dbo.View_3   (TOP (1) ... ORDER BY -> ORDER BY ... LIMIT 1)
-CREATE VIEW view_3 AS
+CREATE OR REPLACE VIEW view_3 AS
 SELECT n.id AS nodeid
 FROM treeversions AS s
    INNER JOIN treeversions AS v ON s.id = v.parentid
@@ -125,7 +125,7 @@ ORDER BY v.name DESC NULLS LAST, r.name DESC NULLS LAST
 LIMIT 1;
 
 -- dbo.gen_Interface_Signals_All  (SSMA for Access)
-CREATE VIEW gen_interface_signals_all AS
+CREATE OR REPLACE VIEW gen_interface_signals_all AS
 SELECT "grouping"."group", "grouping".short_name AS grouping_short_name, "grouping".description, "grouping".multiple,
        names.internal_name, interfaces.array_length, signal_data_types.data_type,
        names.short_name AS names_short_name, names.link_description, interfaces.override, interface_list.label
@@ -141,7 +141,7 @@ FROM signal_data_types
 ORDER BY "grouping"."order" NULLS FIRST, interfaces."order" NULLS FIRST, names.internal_name NULLS FIRST;
 
 -- dbo.gen_Links_Sorted_For_Mapping  (SSMA for Access)
-CREATE VIEW gen_links_sorted_for_mapping AS
+CREATE OR REPLACE VIEW gen_links_sorted_for_mapping AS
 SELECT links.id, links.names_id, areas.stage_id AS stagealias, stage.stage_order, links.area_id,
        areas.ordering AS area_order, links.board_id, board."order" AS board_order, links.c1_first_pin
 FROM stage
@@ -154,7 +154,7 @@ FROM stage
 ORDER BY stage.stage_order NULLS FIRST, areas.ordering NULLS FIRST, board."order" NULLS FIRST, links.c1_first_pin NULLS FIRST;
 
 -- dbo.gen_Sequence_to_Interface_Mapping_All  (SSMA for Access)
-CREATE VIEW gen_sequence_to_interface_mapping_all AS
+CREATE OR REPLACE VIEW gen_sequence_to_interface_mapping_all AS
 SELECT interface_list.label, "grouping"."group" AS group1, "grouping".multiple AS multiple1, names.internal_name AS name1,
        "grouping".short_name AS group2, "grouping".multiple AS multiple2, names.short_name AS name2
 FROM names
@@ -168,7 +168,7 @@ WHERE (((interfaces.insequence) = true))
 ORDER BY interface_list.label NULLS FIRST, "grouping"."order" NULLS FIRST, names.internal_name NULLS FIRST;
 
 -- dbo.make_Interface_Names  (SSMA for Access)
-CREATE VIEW make_interface_names AS
+CREATE OR REPLACE VIEW make_interface_names AS
 SELECT names.link_description, names.short_name, names.internal_name, interfaces.interface_id, interfaces.group_id,
        interfaces.name_id, interfaces.data_type_id, interfaces.array_length
 FROM names
@@ -176,7 +176,7 @@ FROM names
    ON names.id = interfaces.name_id;
 
 -- dbo.review_Interfaces  (SSMA for Access)
-CREATE VIEW review_interfaces AS
+CREATE OR REPLACE VIEW review_interfaces AS
 SELECT interfaces.id, interfaces.interface_id, interfaces.group_id, "grouping".multiple, interfaces.name_id,
        interfaces.data_type_id, interfaces.array_length, interfaces.override, interfaces.insequence,
        "grouping"."order" AS grouping_order, interfaces."order" AS interfaces_order
@@ -189,7 +189,7 @@ ORDER BY interfaces.interface_id NULLS FIRST, "grouping"."order" NULLS FIRST, "g
          interfaces."order" NULLS FIRST, names.internal_name NULLS FIRST;
 
 -- dbo.viewConnections
-CREATE VIEW viewconnections AS
+CREATE OR REPLACE VIEW viewconnections AS
 SELECT n.name AS node, h.name AS hardware, a.name AS area, b.name AS board, n.id AS nodeid, h.id AS hardwareid,
        a.id AS areaid, b.id AS boardid, connections.id AS connectionid, connections.firstpin
 FROM treeversions AS b
@@ -200,7 +200,7 @@ FROM treeversions AS b
 WHERE (n.iconid = 5);
 
 -- dbo.viewGroups
-CREATE VIEW viewgroups AS
+CREATE OR REPLACE VIEW viewgroups AS
 SELECT g."group" AS groupname, g.multiple AS qty, g."order" AS grouporder, l.label AS interfacename
 FROM interface_list AS l
    INNER JOIN interfaces AS i ON l.id = i.interface_id
@@ -210,7 +210,7 @@ HAVING (g."group" IS NOT NULL)
 ORDER BY grouporder NULLS FIRST;
 
 -- dbo.viewInterfaces   (unparenthesised nested joins made explicit; same join tree)
-CREATE VIEW viewinterfaces AS
+CREATE OR REPLACE VIEW viewinterfaces AS
 SELECT "grouping"."group" AS groupname, "grouping".description AS groupdescription, COALESCE("grouping".multiple, 1) AS multiple,
        names.internal_name AS varname, COALESCE(interfaces.array_length, 1) AS arraylen, signal_data_types.data_type,
        names.link_description AS vardescription, interfaces.override, interface_list.label AS interfacename,
@@ -227,7 +227,7 @@ FROM signal_data_types
 
 -- dbo.viewLinks   (its stored definition still says CREATE VIEW dbo.review_Interface_To_Links_Mapping: it was
 --                  renamed with sp_rename; the real name is viewLinks)
-CREATE VIEW viewlinks AS
+CREATE OR REPLACE VIEW viewlinks AS
 SELECT interface_list.label AS interfacename, "grouping"."group" AS groupname, n1.internal_name AS varname,
        signal_data_types.data_type AS datatype, area_list.area_name AS area, board.board_connector AS board,
        n2.short_name AS linkname, n2.link_description AS linkdescription, link_type.link_type AS linktype,
@@ -250,7 +250,7 @@ WHERE (areas.stage_id = 1) OR (areas.stage_id = 4);
 -- dbo.viewConnectionsToImport
 -- NOTE: BROKEN in the source database: it references dbo.review_Interface_To_Links_Mapping, which no longer exists
 --       (renamed to viewLinks). Re-created against viewlinks, same as in mssql/03_programmability.sql.
-CREATE VIEW viewconnectionstoimport AS
+CREATE OR REPLACE VIEW viewconnectionstoimport AS
 SELECT tboards.id AS boardid, vartypes.scopeid AS nodeid, viewlinks.c1_first_pin AS firstpin, tvars.id AS fieldid
 FROM treeversions AS tinterfaces
    INNER JOIN viewlinks ON tinterfaces.name = viewlinks.interfacename
@@ -264,14 +264,14 @@ WHERE (tinterfaces.iconid = 6 OR tinterfaces.iconid = 7) AND (tgroups.typeid >= 
   AND (tareas.iconid = 9) AND (tboards.iconid = 10);
 
 -- dbo.view_InterfaceInfo
-CREATE VIEW view_interfaceinfo AS
+CREATE OR REPLACE VIEW view_interfaceinfo AS
 SELECT treeversions.id, vartypes.description AS interfacedescription, packets.isinput
 FROM treeversions
    INNER JOIN packets ON treeversions.id = packets.nodeid
    INNER JOIN vartypes ON packets.vartypeid = vartypes.id;
 
 -- dbo.view_Interfaces
-CREATE VIEW view_interfaces AS
+CREATE OR REPLACE VIEW view_interfaces AS
 SELECT n.name AS node, i.name AS interfacename, view_interfaceinfo.interfacedescription, r.name AS groupname,
        vartypes.description AS groupdescription, r.qty AS multiple, f.name AS varname, f.qty AS arraylen,
        vartypenames.name AS data_type, f.description AS vardescription, f.override, f.id AS fieldid
@@ -285,7 +285,7 @@ FROM vartypes
 WHERE (r.typeid >= 100);
 
 -- dbo.viewLinksToMappings
-CREATE VIEW viewlinkstomappings AS
+CREATE OR REPLACE VIEW viewlinkstomappings AS
 SELECT f.interfacename, f.varname AS fieldname, l.field_id, l.link_id, f.fieldid, c.connectionid
 FROM viewlinks AS l
    INNER JOIN view_interfaces AS f ON l.interfacename = f.interfacename AND l.groupname = f.groupname AND l.varname = f.varname
@@ -293,7 +293,7 @@ FROM viewlinks AS l
 ORDER BY f.interfacename NULLS FIRST, f.varname NULLS FIRST, f.fieldid NULLS FIRST;
 
 -- dbo.viewMappingSortedByConnections
-CREATE VIEW viewmappingsortedbyconnections AS
+CREATE OR REPLACE VIEW viewmappingsortedbyconnections AS
 SELECT a.name AS area, b.name AS board, c.firstpin, i.name AS interface, t.name AS record, f.name AS field, n.id
 FROM connections AS c
    INNER JOIN treeversions AS b ON c.boardid = b.id
@@ -306,7 +306,7 @@ FROM connections AS c
 WHERE (h.iconid = 8) AND (n.id = 5);
 
 -- dbo.viewPacketMainRecord
-CREATE VIEW viewpacketmainrecord AS
+CREATE OR REPLACE VIEW viewpacketmainrecord AS
 SELECT treeversions.name AS interfacename, fields.name AS fieldname,
        COALESCE(fields.description, vartypenames.description) AS fielddescription, fields.qty AS multiple,
        vartypenames.name AS data_type, packets.vartypeid
@@ -317,7 +317,7 @@ FROM vartypes AS vartypenames
    ON vartypenames.id = fields.typeid;
 
 -- dbo.viewPacketFields
-CREATE VIEW viewpacketfields AS
+CREATE OR REPLACE VIEW viewpacketfields AS
 SELECT viewpacketmainrecord.interfacename, viewpacketmainrecord.fieldname AS groupname,
        viewpacketmainrecord.fielddescription AS groupdescription, viewpacketmainrecord.multiple
 FROM vartypes
@@ -325,7 +325,7 @@ FROM vartypes
    CROSS JOIN viewpacketmainrecord;
 
 -- dbo.viewParts
-CREATE VIEW viewparts AS
+CREATE OR REPLACE VIEW viewparts AS
 SELECT parts.id, partlists.name, partlists.prefix, partlists.version, partstatus.name AS status, locations.location,
        parts.customization, parts.description, parts.mcu_uid, parts.legacysn, parts.coated
 FROM parts
@@ -337,7 +337,7 @@ ORDER BY parts.id DESC NULLS LAST;
 -- dbo.viewTableDependencies   (INFORMATION_SCHEMA exists in PG too; restricted to schema config, which is what
 --                              the SQL Server view saw: every table of AstraConfig lives in dbo). Column naming
 --                              (TableWithPK is really the referencing table) kept exactly as in the original.
-CREATE VIEW viewtabledependencies AS
+CREATE OR REPLACE VIEW viewtabledependencies AS
 SELECT t1.table_name::varchar(128) AS tablewithpk, tc2.table_name::varchar(128) AS tablewithfk
 FROM information_schema.tables AS t1
    INNER JOIN information_schema.table_constraints AS tc1
@@ -350,7 +350,7 @@ FROM information_schema.tables AS t1
 WHERE (t1.table_type = 'BASE TABLE') AND (tc1.constraint_type = 'FOREIGN KEY') AND t1.table_schema = 'config';
 
 -- dbo.view_InterfacesPerTest
-CREATE VIEW view_interfacespertest AS
+CREATE OR REPLACE VIEW view_interfacespertest AS
 SELECT n.name AS smartnodename, d.ipv4, d.port, i.name AS interfacename, p.isinput,
        '\\' || s.fullname || '\' || v.name || '\' AS libraryname
 FROM actors AS a
@@ -386,7 +386,7 @@ WHERE (a.testid = 1);
 
 -- Migration helper (no T-SQL counterpart): emulates SET IDENTITY_INSERT semantics. In SQL Server an explicit value
 -- larger than the current identity moves the identity forward; a PG identity sequence does not move by itself.
-CREATE FUNCTION identity_insert_bump(p_table text, p_column text, p_value bigint)
+CREATE OR REPLACE FUNCTION identity_insert_bump(p_table text, p_column text, p_value bigint)
 RETURNS void
 LANGUAGE plpgsql
 AS $fn$
@@ -411,7 +411,7 @@ COMMENT ON FUNCTION identity_insert_bump(text, text, bigint) IS 'Migration helpe
 -- Difference: the T-SQL @Edges table has PRIMARY KEY(FieldRecordID, RecordID), so a record with two fields of the
 -- same record type makes the T-SQL INSERT fail (PK violation; @Edges stays empty). Here duplicate edges are
 -- collapsed with DISTINCT. No such duplicates exist in the migrated data.
-CREATE FUNCTION getvartypesintopologicalorder(nodeid integer)
+CREATE OR REPLACE FUNCTION getvartypesintopologicalorder(nodeid integer)
 RETURNS TABLE(id integer, vartypeid integer)
 LANGUAGE plpgsql
 SET search_path = config
@@ -464,7 +464,7 @@ $fn$;
 -- Same algorithm over viewtabledependencies. Table names are the PG (lower-case) names of schema config.
 -- "TOP 1 TableName ORDER BY TableName" uses the mssql_order collation (SQL Server-like ordering).
 -- Difference: SQL Server also lists dbo.sysdiagrams (SSMS diagram table), which is not migrated.
-CREATE FUNCTION gettablesintopologicalorder()
+CREATE OR REPLACE FUNCTION gettablesintopologicalorder()
 RETURNS TABLE(id integer, tablename varchar(128))
 LANGUAGE plpgsql
 SET search_path = config
@@ -509,7 +509,7 @@ $fn$;
 
 -- ---------------------------------------------------------------------------------------------------
 -- dbo.spCalcVarTypeSizes(@NodeID)  (used by the bridge) -> RETURNS void
-CREATE FUNCTION spcalcvartypesizes(nodeid integer)
+CREATE OR REPLACE FUNCTION spcalcvartypesizes(nodeid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -549,7 +549,7 @@ $fn$;
 
 -- ---------------------------------------------------------------------------------------------------
 -- dbo.spGetVarType(@NodeID, @VarTypeID OUT, @Name OUT, @Description OUT, @DecSize OUT, @EncSize OUT)  (bridge)
-CREATE FUNCTION spgetvartype(nodeid integer,
+CREATE OR REPLACE FUNCTION spgetvartype(nodeid integer,
                              INOUT vartypeid integer DEFAULT NULL,
                              INOUT name varchar(64) DEFAULT NULL,
                              INOUT description varchar(256) DEFAULT NULL,
@@ -574,7 +574,7 @@ $fn$;
 
 -- ---------------------------------------------------------------------------------------------------
 -- dbo.spTestExport(@TestID)  (bridge: BridgeMonitor runs "EXEC spTestExport ..." -> "SELECT config.sptestexport(...)")
-CREATE FUNCTION sptestexport(testid integer)
+CREATE OR REPLACE FUNCTION sptestexport(testid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -600,7 +600,7 @@ $fn$;
 
 -- ---------------------------------------------------------------------------------------------------
 -- dbo.spAddMapping / spDelMapping / spMoveField
-CREATE FUNCTION spaddmapping(fieldid integer, connectionid integer)
+CREATE OR REPLACE FUNCTION spaddmapping(fieldid integer, connectionid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -614,7 +614,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spdelmapping(fieldid integer, connectionid integer)   -- @ConnectionID is unused in the original too
+CREATE OR REPLACE FUNCTION spdelmapping(fieldid integer, connectionid integer)   -- @ConnectionID is unused in the original too
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -627,7 +627,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spmovefield(fieldid integer, vartypeid integer)
+CREATE OR REPLACE FUNCTION spmovefield(fieldid integer, vartypeid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -643,7 +643,7 @@ $fn$;
 
 -- ---------------------------------------------------------------------------------------------------
 -- dbo.spCleanTypes(@ScopeID) / dbo.spVarTypes(@ScopeID)  (SELECT * FROM VarTypes ...)
-CREATE FUNCTION spcleantypes(scopeid integer)
+CREATE OR REPLACE FUNCTION spcleantypes(scopeid integer)
 RETURNS SETOF vartypes
 LANGUAGE plpgsql
 SET search_path = config
@@ -656,7 +656,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spvartypes(scopeid integer)
+CREATE OR REPLACE FUNCTION spvartypes(scopeid integer)
 RETURNS SETOF vartypes
 LANGUAGE plpgsql
 SET search_path = config
@@ -674,7 +674,7 @@ $fn$;
 
 -- ---------------------------------------------------------------------------------------------------
 -- Tree operations: dbo.spDelete / spDeleteNode / spDeletePacket  (mutually recursive, as in T-SQL)
-CREATE FUNCTION spdelete(nodeid integer)
+CREATE OR REPLACE FUNCTION spdelete(nodeid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -697,7 +697,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spdeletenode(nodeid integer)
+CREATE OR REPLACE FUNCTION spdeletenode(nodeid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -715,7 +715,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spdeletepacket(nodeid integer)
+CREATE OR REPLACE FUNCTION spdeletepacket(nodeid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -731,7 +731,7 @@ $fn$;
 
 -- ---------------------------------------------------------------------------------------------------
 -- Tree operations: dbo.spDuplicate and helpers
-CREATE FUNCTION spduplicate(sourceid integer, targetid integer)
+CREATE OR REPLACE FUNCTION spduplicate(sourceid integer, targetid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -759,7 +759,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spduplicateconnectors(sourceid integer, targetid integer)
+CREATE OR REPLACE FUNCTION spduplicateconnectors(sourceid integer, targetid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -779,7 +779,7 @@ $fn$;
 
 -- Note (kept from the original): @Count counts the source children with IconID 6/7, but the loop then walks the
 -- first @Count children by ID without filtering on IconID.
-CREATE FUNCTION spduplicatemapping(sourceid integer, targetid integer)
+CREATE OR REPLACE FUNCTION spduplicatemapping(sourceid integer, targetid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -829,7 +829,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spduplicatenode(sourceid integer, targetid integer)
+CREATE OR REPLACE FUNCTION spduplicatenode(sourceid integer, targetid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -883,7 +883,7 @@ END
 $fn$;
 
 -- Note (kept from the original): the UPDATE writes "Seq = Seq" (a no-op), not the incremented @Seq.
-CREATE FUNCTION spduplicatepacket(sourceid integer, targetid integer)
+CREATE OR REPLACE FUNCTION spduplicatepacket(sourceid integer, targetid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -958,7 +958,7 @@ $fn$;
 -- ---------------------------------------------------------------------------------------------------
 -- Device / interface / packet lookups (result-set procs)
 -- The T-SQL input parameter @ID clashes with the result column ID (not allowed in PG): input renamed to deviceid.
-CREATE FUNCTION spgetdevice(deviceid integer, testid integer)
+CREATE OR REPLACE FUNCTION spgetdevice(deviceid integer, testid integer)
 RETURNS TABLE(id integer, name varchar(50), ipv4 varchar(15), port integer, smartnodeid integer)
 LANGUAGE plpgsql
 SET search_path = config
@@ -977,7 +977,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgetdevices(testid integer)
+CREATE OR REPLACE FUNCTION spgetdevices(testid integer)
 RETURNS TABLE(deviceid integer)
 LANGUAGE plpgsql
 SET search_path = config
@@ -991,7 +991,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgethardwarenode(scopeid integer, INOUT nodeid integer DEFAULT NULL)
+CREATE OR REPLACE FUNCTION spgethardwarenode(scopeid integer, INOUT nodeid integer DEFAULT NULL)
 LANGUAGE plpgsql
 SET search_path = config
 AS $fn$
@@ -1011,7 +1011,7 @@ END
 $fn$;
 
 -- #T loop (add children with IconID 8/9/10 until no rows are added) == recursive CTE over the same rule.
-CREATE FUNCTION spgethardwaretree(scopeid integer)
+CREATE OR REPLACE FUNCTION spgethardwaretree(scopeid integer)
 RETURNS TABLE(id integer, name varchar(50), parentid integer, iconid integer, seq integer)
 LANGUAGE plpgsql
 SET search_path = config
@@ -1036,7 +1036,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgetinppacketsizes()
+CREATE OR REPLACE FUNCTION spgetinppacketsizes()
 RETURNS TABLE(packetid integer, name varchar(50), encsize integer)
 LANGUAGE plpgsql
 SET search_path = config
@@ -1052,7 +1052,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgetinterface(nodeid integer)
+CREATE OR REPLACE FUNCTION spgetinterface(nodeid integer)
 RETURNS TABLE(varorder integer, recordname varchar(50), recorddescription varchar(128), fieldname varchar(50),
               arraylen integer, typename varchar(50), fielddescription varchar(128), override boolean, insequence boolean)
 LANGUAGE plpgsql
@@ -1077,7 +1077,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgetintf(id integer, testid integer)
+CREATE OR REPLACE FUNCTION spgetintf(id integer, testid integer)
 RETURNS TABLE(packetid integer, name varchar(50), isinput boolean, intfid integer, smartnodeid integer, deviceid integer)
 LANGUAGE plpgsql
 SET search_path = config
@@ -1099,7 +1099,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgetintfs(testid integer)
+CREATE OR REPLACE FUNCTION spgetintfs(testid integer)
 RETURNS TABLE(packetid integer, intfid integer, isinput boolean)
 LANGUAGE plpgsql
 SET search_path = config
@@ -1121,7 +1121,7 @@ $fn$;
 
 -- ---------------------------------------------------------------------------------------------------
 -- Mapping procs
-CREATE FUNCTION spgetmappingbyconnection(connectionid integer, packetid integer,
+CREATE OR REPLACE FUNCTION spgetmappingbyconnection(connectionid integer, packetid integer,
                                          INOUT vartypeid integer DEFAULT NULL, INOUT fieldid integer DEFAULT NULL)
 LANGUAGE plpgsql
 SET search_path = config
@@ -1143,7 +1143,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgetmappingbyfield(fieldid integer, packetid integer,
+CREATE OR REPLACE FUNCTION spgetmappingbyfield(fieldid integer, packetid integer,
                                     INOUT boardid integer DEFAULT NULL, INOUT connectionid integer DEFAULT NULL)
 LANGUAGE plpgsql
 SET search_path = config
@@ -1169,7 +1169,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgetmappingsortedbyconnections(nodeid integer)
+CREATE OR REPLACE FUNCTION spgetmappingsortedbyconnections(nodeid integer)
 RETURNS TABLE(id integer, connectionid integer)
 LANGUAGE plpgsql
 SET search_path = config
@@ -1195,7 +1195,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgetmappingsortedbyfields(nodeid integer)
+CREATE OR REPLACE FUNCTION spgetmappingsortedbyfields(nodeid integer)
 RETURNS TABLE(id integer, fieldid integer)
 LANGUAGE plpgsql
 SET search_path = config
@@ -1218,7 +1218,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgetmappingwithorders(nodeid integer)
+CREATE OR REPLACE FUNCTION spgetmappingwithorders(nodeid integer)
 RETURNS TABLE(fieldid integer, connectionid integer, fieldorder integer, connectionorder integer, area varchar(50),
               board varchar(50), firstpin integer, interface varchar(50), record varchar(50), qty integer,
               field varchar(50), shortname varchar(16), description varchar(128))
@@ -1272,7 +1272,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spmappingexists(fieldid integer, connectionid integer, INOUT "exists" boolean DEFAULT NULL)
+CREATE OR REPLACE FUNCTION spmappingexists(fieldid integer, connectionid integer, INOUT "exists" boolean DEFAULT NULL)
 LANGUAGE plpgsql
 SET search_path = config
 AS $fn$
@@ -1289,7 +1289,7 @@ $fn$;
 
 -- ---------------------------------------------------------------------------------------------------
 -- Node / packet lookups with OUTPUT parameters
-CREATE FUNCTION spgetnodebypacket(packetid integer, testid integer, INOUT nodeid integer DEFAULT NULL)
+CREATE OR REPLACE FUNCTION spgetnodebypacket(packetid integer, testid integer, INOUT nodeid integer DEFAULT NULL)
 LANGUAGE plpgsql
 SET search_path = config
 AS $fn$
@@ -1309,7 +1309,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgetnodeid(stage varchar(64), node varchar(64), packet varchar(64), INOUT nodeid integer DEFAULT NULL)
+CREATE OR REPLACE FUNCTION spgetnodeid(stage varchar(64), node varchar(64), packet varchar(64), INOUT nodeid integer DEFAULT NULL)
 LANGUAGE plpgsql
 SET search_path = config
 AS $fn$
@@ -1335,7 +1335,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgetpacket(nodeid integer, INOUT packetid integer DEFAULT NULL,
+CREATE OR REPLACE FUNCTION spgetpacket(nodeid integer, INOUT packetid integer DEFAULT NULL,
                             INOUT packetname varchar(50) DEFAULT NULL, INOUT isinput boolean DEFAULT NULL)
 LANGUAGE plpgsql
 SET search_path = config
@@ -1357,7 +1357,7 @@ $fn$;
 -- SELECT * FROM Servers s INNER JOIN Tests t ...: the T-SQL result set has two columns called ID and two called
 -- Name; a PG function result cannot, so the Tests columns that clash are returned as id_1 / name_1 (the names
 -- FireDAC itself gives the duplicates).
-CREATE FUNCTION spgetserver(testid integer)
+CREATE OR REPLACE FUNCTION spgetserver(testid integer)
 RETURNS TABLE(id integer, name varchar(50), winname varchar(64), fullname varchar(128), ipv4 varchar(15), port integer,
               opcservername varchar(128), sqlserverinstance varchar(128), databasename varchar(64), username varchar(64),
               password varchar(64), id_1 integer, name_1 varchar(64), description varchar(256), serverid integer,
@@ -1377,7 +1377,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spgetvartypefields(vartypeid integer)
+CREATE OR REPLACE FUNCTION spgetvartypefields(vartypeid integer)
 RETURNS TABLE(fieldname varchar(50), arraylen integer, typeid integer, initialvalue varchar(128), typename varchar(50),
               fielddescription varchar(128), override boolean, insequence boolean, transformationid integer)
 LANGUAGE plpgsql
@@ -1401,7 +1401,7 @@ $fn$;
 -- Note (kept from the original): the final INSERT INTO Packets(IsInput, VarTypeID, NodeID) does not supply
 -- Packets.ID, which is NOT NULL without default/identity, so it fails in SQL Server as well. In T-SQL that
 -- statement error leaves the earlier inserts committed (no transaction); in PG the whole call rolls back.
-CREATE FUNCTION sploadpacketdef(nodeid integer, name varchar(50), isinput boolean, interfacename varchar(50))
+CREATE OR REPLACE FUNCTION sploadpacketdef(nodeid integer, name varchar(50), isinput boolean, interfacename varchar(50))
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -1472,7 +1472,7 @@ $fn$;
 -- dbo.spMoveNodeToSeq(@NodeID, @Seq)   (#S IDENTITY ordering -> row_number)
 -- Difference: `parentid = parentid` is unknown when both are NULL, so a vehicle root was updated
 -- alone and its siblings kept a null seq. IS NOT DISTINCT FROM treats those roots as one sibling group.
-CREATE FUNCTION spmovenodetoseq(nodeid integer, seq integer)
+CREATE OR REPLACE FUNCTION spmovenodetoseq(nodeid integer, seq integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -1509,7 +1509,7 @@ $fn$;
 -- ---------------------------------------------------------------------------------------------------
 -- dbo.spPopulateTreeVersions  (initial tree + base types; SET IDENTITY_INSERT -> explicit ids + identity_insert_bump)
 -- Note: T-SQL continues after the (expected) spLoadPacketDef error; PG aborts the call at the first error.
-CREATE FUNCTION sppopulatetreeversions()
+CREATE OR REPLACE FUNCTION sppopulatetreeversions()
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -1561,7 +1561,7 @@ $fn$;
 
 -- ---------------------------------------------------------------------------------------------------
 -- dbo.spSetPacket
-CREATE FUNCTION spsetpacket(nodeid integer, packetid integer, packetname varchar(50), isinput boolean)
+CREATE OR REPLACE FUNCTION spsetpacket(nodeid integer, packetid integer, packetname varchar(50), isinput boolean)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -1595,7 +1595,7 @@ $fn$;
 
 -- ---------------------------------------------------------------------------------------------------
 -- Test lifecycle
-CREATE FUNCTION sptestinterfaces(atestid integer)
+CREATE OR REPLACE FUNCTION sptestinterfaces(atestid integer)
 RETURNS TABLE(smartnodename varchar(50), ipv4 varchar(15), port integer, interfacename varchar(50), isinput boolean, libraryname text)
 LANGUAGE plpgsql
 SET search_path = config
@@ -1620,7 +1620,7 @@ END
 $fn$;
 
 
-CREATE FUNCTION spteststart(testid integer)
+CREATE OR REPLACE FUNCTION spteststart(testid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -1633,7 +1633,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION spteststop(testid integer)
+CREATE OR REPLACE FUNCTION spteststop(testid integer)
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = config
@@ -1651,7 +1651,7 @@ $fn$;
 -- Same caveat in both engines: FK_Fields_Connections (NO ACTION) is checked before this AFTER trigger runs, so a
 -- delete of a Connection that is still referenced by Fields fails with an FK error and the trigger never gets to
 -- clear Fields.ConnectionID.
-CREATE FUNCTION trgafterdeleteonconnections()
+CREATE OR REPLACE FUNCTION trgafterdeleteonconnections()
 RETURNS trigger
 LANGUAGE plpgsql
 SET search_path = config
@@ -1665,6 +1665,7 @@ BEGIN
 END
 $fn$;
 
+DROP TRIGGER IF EXISTS trgafterdeleteonconnections ON config.connections;
 CREATE TRIGGER trgafterdeleteonconnections
     AFTER DELETE ON connections
     REFERENCING OLD TABLE AS deleted
@@ -1688,7 +1689,7 @@ CREATE TRIGGER trgafterdeleteonconnections
 --   * CONVERT(int, d.value) truncates toward zero -> trunc(d.value)::integer (a plain ::integer would round).
 --   * Table names are folded to lower case (testlog tables are lower case in PG).
 
-CREATE FUNCTION testlog.spimportvalues(tablename varchar(64), testname varchar(8))
+CREATE OR REPLACE FUNCTION testlog.spimportvalues(tablename varchar(64), testname varchar(8))
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = testlog, config
@@ -1749,7 +1750,7 @@ BEGIN
 END
 $fn$;
 
-CREATE FUNCTION testlog.spinserttimestamps(tablename varchar(64), testname varchar(8))
+CREATE OR REPLACE FUNCTION testlog.spinserttimestamps(tablename varchar(64), testname varchar(8))
 RETURNS void
 LANGUAGE plpgsql
 SET search_path = testlog, config

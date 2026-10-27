@@ -23,6 +23,9 @@ def default_schema_dir() -> Path:
     override = os.environ.get("GOLIATH_GROUND_SCHEMA_DIR", "").strip()
     if override:
         return Path(override)
+    packaged = Path(__file__).resolve().parent / "domain_schema"
+    if packaged.is_dir():
+        return packaged
     return Path(__file__).resolve().parents[2] / "database" / "schema"
 
 

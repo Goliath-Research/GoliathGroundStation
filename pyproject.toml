@@ -32,3 +32,6 @@ goliath-load-domain-schema = "goliathgroundstation.domain_schema:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/goliathgroundstation"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"database/schema" = "goliathgroundstation/domain_schema"
