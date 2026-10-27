@@ -3,7 +3,11 @@
   "id": "goliathgroundstation",
   "name": "GoliathGroundStation",
   "tagline": "Launch-ops ground station on GoliathApp: singleton gateway, OPC fan-out, operator identity.",
+<<<<<<< HEAD
   "description": "GoliathGroundStation specializes GoliathApp for integration, pre-launch, and in-flight monitoring. A singleton ground gateway ingests umbilical or over-the-air telemetry and publishes OPC UA variables to N LabVIEW or other monitor stations. Live ingest is publish/subscribe, not workflow workers. GoliathApp supplies RBAC; Phase 3 requires DomainPrograms for sensor/actuator event logging and batch campaigns. Runtime services today live in a private ground-station codebase that is migrating into this public product; this repository owns the catalog surface and conversion plan.",
+=======
+  "description": "GoliathGroundStation specializes GoliathApp for integration, pre-launch, and in-flight monitoring. A singleton ground gateway ingests umbilical or over-the-air telemetry and publishes OPC UA variables to N LabVIEW or other monitor stations. Live ingest is publish/subscribe, not workflow workers. GoliathApp supplies RBAC and DomainPrograms for batch I&T campaigns and event logging. Runtime services today live in a private ground-station codebase that is migrating into this public product; this repository owns the catalog surface and conversion plan.",
+>>>>>>> caf4ad8 (Align product.json copy with required DomainPrograms scope)
   "category": "application",
   "features": [
     {

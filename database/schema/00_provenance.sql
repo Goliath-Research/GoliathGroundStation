@@ -12,4 +12,9 @@
 -- See docs/domain-sql.md and scripts/apply_domain_schema.sh.
 -- Rewriting this baseline into GoliathApp Meta is explicitly out of scope
 -- for the first Phase 3 slice.
+--
+-- Phase 3 extensions in this repo (not from Astra backup):
+--   04_it_event_log.sql — testlog.it_event for DomainProgram I&T capture
+--   05_domain_action_catalog.sql — wf action seed documentation
+-- See docs/domain-programs.md (GitHub issue #8).
 -- =====================================================================

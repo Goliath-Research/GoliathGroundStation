@@ -1,0 +1,27 @@
+-- =====================================================================
+-- GoliathGroundStation — DomainProgram action catalog (documentary)
+-- Phase 3 slice. Does NOT insert into wf.* — platform DDL and
+-- wf.wf_repo_upsert_workflow_action overloads must exist first.
+--
+-- Run these manually on a GoliathApp test bed after reviewing
+-- docs/domain-programs.md and domain_programs/*.program.json.
+-- =====================================================================
+
+-- Example upsert pattern (adjust argument list to match your platform release):
+--
+-- SELECT wf.wf_repo_upsert_workflow_action(
+--   p_action_name := 'ground.it_event_flush_batch',
+--   p_capability := 'ground.it_event',
+--   p_execution_mode := 'in_process',
+--   p_in_process_handler := 'goliath_ground_worker.handlers.it_event_flush_batch',
+--   p_implementation_status := 'draft'
+-- );
+--
+-- Intended rows (action_name → capability):
+--   ground.it_event_collect_buffered     → ground.it_event
+--   ground.it_event_flush_batch          → ground.it_event
+--   ground.testlog_export_prepare        → ground.testlog_export
+--   ground.testlog_export_run            → ground.testlog_export
+--   ground.testlog_export_finalize       → ground.testlog_export
+--   ground.config_fixture_apply          → ground.config_campaign
+--   ground.config_promote_site           → ground.config_campaign
