@@ -11,4 +11,4 @@ pip install -e ".[dev]"
 pytest tests/test_domain_program_stubs.py -q
 ```
 
-See [docs/domain-programs.md](../docs/domain-programs.md) for scope, OPC boundary, and action catalog.
+See [docs/domain-programs.md](../docs/domain-programs.md) for scope, OPC boundary, and action catalog. Dual activation (tier 2): [docs/dual-activation-tier2.md](../docs/dual-activation-tier2.md).

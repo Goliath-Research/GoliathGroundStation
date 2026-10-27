@@ -92,14 +92,16 @@ Document-only until seed SQL is wired to `wf.wf_repo_upsert_workflow_action` on 
 
 Optional seed template (run manually after platform apply): [`database/schema/05_domain_action_catalog.sql`](../database/schema/05_domain_action_catalog.sql).
 
-## Activation: claim today; dual wake later
+## Activation: claim + optional dual wake (tier 2)
 
-**Out of scope for this slice:** dual activation (pub/sub wake + claim) for DomainPrograms.
+- **Claim (always):** workers take ownership via `POST /v1/workers/tasks/request` — the safety net and backlog path.
+- **Wake (optional):** when GoliathApp tier 1 is enabled (`WF_WAKE_POSTGRES` / `WORKER_WAKE_POSTGRES`), batch edges attach `payload.worker_wake` so idle workers start sooner, then **still claim**.
 
-- **Today:** event-driven or timer-driven campaigns **start via the normal claim loop** (operator or scheduler creates a workflow instance; workers claim ACTION nodes).
-- **Later:** tier-2 pub/sub wake to reduce latency when events fire ([GoliathApp #22](https://github.com/Goliath-Research/GoliathApp/issues/22), [GoliathGroundStation #3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3)). Documented here so stubs do not assume `on:` event triggers are wired in production yet.
+Product mapping (which programs, channels, and GGS edges publish wakes; OPC boundary): **[dual-activation-tier2.md](dual-activation-tier2.md)** ([issue #3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3)). Platform DTOs and broker: [GoliathApp dual-activation.md](https://github.com/Goliath-Research/GoliathApp/blob/main/docs/dual-activation.md) ([#22](https://github.com/Goliath-Research/GoliathApp/issues/22)).
 
-The **`event_wait_ack`**-style `on:` / `wait:` blocks in Omics fixtures illustrate future fast-start patterns; ground-station stubs intentionally omit `on:` until tier 2 lands.
+Helper (channel list aligned with App stubs): `goliathgroundstation.worker_wake.worker_wake_hints_for_program`.
+
+The **`event_wait_ack`**-style `on:` / `wait:` blocks in Omics fixtures illustrate future fast-start patterns; ground-station stubs intentionally omit `on:` until event rules and portal starts are wired on a test bed.
 
 ## Phase 3 checklist (this slice)
 
@@ -112,6 +114,7 @@ The **`event_wait_ack`**-style `on:` / `wait:` blocks in Omics fixtures illustra
 | JSON schema smoke tests | Done — [`tests/test_domain_program_stubs.py`](../tests/test_domain_program_stubs.py) |
 | Workers implement handlers | **Not done** — awaits ground worker package |
 | Platform compile/seed programs | **Not done** |
-| Dual activation | **Not done** — [#3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3) |
+| Dual activation design (tier 2) | **In progress** — [dual-activation-tier2.md](dual-activation-tier2.md), [#3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3) |
+| Dual activation wiring (edges + workers) | **Not done** |
 
 See also [conversion-plan.md](conversion-plan.md) customer checklist.
