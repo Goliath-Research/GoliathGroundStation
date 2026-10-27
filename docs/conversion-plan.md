@@ -162,6 +162,8 @@ flowchart LR
 
 GoliathApp workers wait for leased ACTION nodes. The ground gateway does not. It either polls the vehicle on the umbilical or receives an over-the-air transmission as an event, then publishes OPC variables. Monitor stations subscribe; their count tracks engines and vehicle variables, not a worker pool size.
 
+For optional batch work only (not the live OPC path): **notify via pub/sub, own via claim** — a pub/sub wake can signal that work is ready while DomainProgram workers still take ownership through the claim loop. Umbilical poll remains the safety net for ingest timing. The OPC telemetry bus stays separate from that activation path.
+
 - **Use GoliathApp for security and tenancy**
   - Operator sessions and roles
   - Which stations may subscribe to which tag trees
@@ -180,12 +182,13 @@ GoliathApp workers wait for leased ACTION nodes. The ground gateway does not. It
 
 Status as of the plan date — mark done when a phase ships.
 
-- [ ] Product page and dependsOn hierarchy on GoliathWeb (Phase 1)
-- [ ] GoliathGroundStation repository and product.json (Phase 1–2)
+- [x] Product page and dependsOn hierarchy on GoliathWeb (Phase 1 — [GoliathWeb #4](https://github.com/Goliath-Research/GoliathWeb/issues/4))
+- [x] GoliathGroundStation repository and product.json (Phase 1–2)
 - [ ] Deploy profile: singleton gateway + OPC + N monitors (Phase 2)
 - [ ] Operator identity via GoliathApp RBAC (Phase 2–3)
 - [ ] Domain SQL ownership for config / testlog (Phase 3)
 - [ ] Optional DomainPrograms for export campaigns (Phase 3)
+- [ ] Dual activation (pub/sub wake + claim) for optional DomainProgram / event batch work — not live OPC ([GoliathApp #22](https://github.com/Goliath-Research/GoliathApp/issues/22), [GoliathGroundStation #3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3), [GoliathOmics #67](https://github.com/Goliath-Research/GoliathOmics/issues/67))
 - [ ] Optional portal UI chrome (Phase 4)
 
 **Pitch line.** Same GoliathApp foundation as our genomics product — specialized for launch ops — with a singleton rocket gateway and OPC fan-out to as many monitor stations as your engines and vehicle require.
