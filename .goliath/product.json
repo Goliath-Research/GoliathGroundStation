@@ -3,7 +3,7 @@
   "id": "goliathgroundstation",
   "name": "GoliathGroundStation",
   "tagline": "Launch-ops ground station on GoliathApp: singleton gateway, OPC fan-out, operator identity.",
-  "description": "GoliathGroundStation specializes GoliathApp for integration, pre-launch, and in-flight monitoring. A singleton ground gateway ingests umbilical or over-the-air telemetry and publishes OPC UA variables to N LabVIEW or other monitor stations. Live ingest is publish/subscribe, not workflow workers. GoliathApp supplies RBAC and optional DomainPrograms for batch campaigns. Runtime services currently live in astra-ground-station-py; this repository owns the product surface and conversion plan.",
+  "description": "GoliathGroundStation specializes GoliathApp for integration, pre-launch, and in-flight monitoring. A singleton ground gateway ingests umbilical or over-the-air telemetry and publishes OPC UA variables to N LabVIEW or other monitor stations. Live ingest is publish/subscribe, not workflow workers. GoliathApp supplies RBAC and optional DomainPrograms for batch campaigns. Runtime services today live in a private ground-station codebase that is migrating into this public product; this repository owns the catalog surface and conversion plan.",
   "category": "application",
   "features": [
     {
@@ -28,7 +28,7 @@
     "docs": null,
     "website": null
   },
-  "related": ["goliathapp", "astra-ground-station-py"],
+  "related": ["goliathapp"],
   "dependsOn": ["goliathapp"],
   "license": "MIT",
   "status": "planned"
