@@ -31,5 +31,5 @@
   "related": ["goliathapp"],
   "dependsOn": ["goliathapp"],
   "license": "MIT",
-  "status": "planned"
+  "status": "experimental"
 }

@@ -1,0 +1,20 @@
+[Unit]
+Description=GoliathGroundStation configurator and test campaign web API
+Documentation=https://github.com/Goliath-Research/GoliathGroundStation/blob/main/deploy/README.md
+After=network-online.target goliath-ground-gateway.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__GOLIATH_USER__
+WorkingDirectory=__GOLIATH_INSTALL_ROOT__
+EnvironmentFile=-__GOLIATH_INSTALL_ROOT__/env/web.env
+EnvironmentFile=-/etc/goliath/ground-secrets.env
+Environment=PATH=__GOLIATH_VENV__/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+# ExecStart=__GOLIATH_VENV__/bin/goliath-ground-web --host 127.0.0.1 --port 8000
+ExecStart=/bin/true
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
