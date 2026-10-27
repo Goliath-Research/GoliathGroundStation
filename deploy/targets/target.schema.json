@@ -264,6 +264,69 @@
           "description": "Ground-station domain SQL (config/testlog). Phase 3; none until this repo ships domain migrations."
         }
       }
+    },
+    "operators": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Operator identity via GoliathApp portal sessions and RBAC — not worker gateway sessions. Tag-tree ACL enforcement is Phase 3.",
+      "properties": {
+        "session_source": {
+          "type": "string",
+          "enum": [
+            "goliathapp_portal"
+          ],
+          "default": "goliathapp_portal",
+          "description": "Human operators authenticate with portal.sp_session_open / portal.fn_session_resolve (see GoliathApp docs/rbac.md)."
+        },
+        "app_base_url": {
+          "type": "string",
+          "description": "Public GoliathApp BFF or portal base URL used to validate operator bearer tokens in front of configurator HTTP."
+        },
+        "required_roles": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "RBAC role names required for any ground-station operator action at this site."
+        },
+        "configurator": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Stricter policy for configurator / test-campaign HTTP (goliath-ground-web).",
+          "properties": {
+            "required_roles": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "public_base_url": {
+              "type": "string",
+              "description": "Operator-facing configurator URL when different from gateway.services.web.public_base_url."
+            }
+          }
+        },
+        "opc_tag_tree_acl": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Future mapping from RBAC to monitors[].tag_trees. Inventory-only until Phase 3.",
+          "properties": {
+            "enforce": {
+              "type": "boolean",
+              "default": false,
+              "description": "When true (Phase 3+), OPC server rejects reads outside allowed tag trees for the operator or monitor principal."
+            },
+            "notes": {
+              "type": "string",
+              "description": "Customer runbook text; not interpreted by deploy tooling in Phase 2."
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
