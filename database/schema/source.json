@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/Goliath-Research/astra-ground-station-py",
+  "commit": "2f91f4388afa8f56ab105dbe00e9b98162c18e02",
+  "paths": [
+    "database/schema/01_schema.sql",
+    "database/schema/03_programmability.sql"
+  ],
+  "owner": "GoliathGroundStation",
+  "schemas": ["config", "testlog"]
+}

@@ -7,7 +7,10 @@ GoliathApp specialization for launch-ops ground station: singleton rocket gatewa
 | Path | Purpose |
 | --- | --- |
 | [`docs/conversion-plan.md`](docs/conversion-plan.md) | Customer deliverables, architecture, phased checklist |
+| [`docs/domain-sql.md`](docs/domain-sql.md) | Platform vs domain DDL; `config` / `testlog`; apply order |
 | [`docs/operator-identity.md`](docs/operator-identity.md) | GoliathApp portal sessions vs worker sessions; deploy `operators` hooks |
+| [`database/schema/`](database/schema/) | Owned PostgreSQL DDL (from Astra baseline) |
+| [`scripts/apply_domain_schema.sh`](scripts/apply_domain_schema.sh) | Apply domain SQL after GoliathApp platform schema |
 | [`deploy/`](deploy/) | Deploy topology, systemd stubs, customer **target profiles** |
 | [`deploy/targets/`](deploy/targets/) | `target.schema.json` + example JSON per site |
 | [`src/goliathgroundstation/`](src/goliathgroundstation/) | Thin Python product shell (will specialize GoliathApp) |
@@ -36,6 +39,7 @@ python scripts/validate_deploy_target.py deploy/targets/goliath-ground-test.exam
 ## Docs
 
 - [Conversion plan](docs/conversion-plan.md) — deliverables, architecture (Mermaid), phases, and checklist
+- [Domain SQL](docs/domain-sql.md) — `config` / `testlog` ownership and apply (`goliath-load-domain-schema` CLI)
 - [Operator identity](docs/operator-identity.md) — portal RBAC for configurator operators; monitors are OPC clients, not workers ([GoliathApp RBAC](https://github.com/Goliath-Research/GoliathApp/blob/main/docs/rbac.md), [workers contrast](https://github.com/Goliath-Research/GoliathApp/blob/main/docs/workers.md))
 
 ## Related
