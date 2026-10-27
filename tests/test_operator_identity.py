@@ -127,7 +127,7 @@ def test_postgres_resolver_fake_connection() -> None:
                 "full_name": "Name",
                 "active_scope_id": 7,
                 "organizations": "[]",
-                "expires_at_utc": "2026-01-01",
+                "expires_at_utc": "2099-01-01T00:00:00+00:00",
                 "revoked": False,
             }
 

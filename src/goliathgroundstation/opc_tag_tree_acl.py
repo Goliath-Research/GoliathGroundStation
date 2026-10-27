@@ -6,6 +6,13 @@ from dataclasses import dataclass
 from typing import Mapping, Sequence
 
 
+def _prefix_covered_by_role_grants(inventory_prefix: str, role_prefixes: set[str]) -> bool:
+    for role_prefix in role_prefixes:
+        if inventory_prefix.startswith(role_prefix) or role_prefix.startswith(inventory_prefix):
+            return True
+    return False
+
+
 def _normalize_tree_prefix(prefix: str) -> str:
     trimmed = prefix.strip()
     if not trimmed:
@@ -82,8 +89,7 @@ class OpcTagTreeAcl:
             prefixes: list[str] = []
             for role in operator_roles:
                 prefixes.extend(self._role_tag_trees.get(role, ()))
-            if prefixes:
-                return tuple(dict.fromkeys(prefixes))
+            return tuple(dict.fromkeys(prefixes))
         return tuple(entry[2] for entry in self._entries)
 
     def evaluate(
@@ -108,7 +114,7 @@ class OpcTagTreeAcl:
         allowed_role_prefixes = set(self.allowed_prefixes(operator_roles=operator_roles))
 
         for monitor_name, _label, prefix in self._entries:
-            if role_filtered and prefix not in allowed_role_prefixes:
+            if role_filtered and not _prefix_covered_by_role_grants(prefix, allowed_role_prefixes):
                 continue
             if normalized_request == prefix.rstrip("/") or normalized_request.startswith(prefix):
                 return OpcTagTreeDecision(
@@ -119,6 +125,20 @@ class OpcTagTreeAcl:
                     monitor_name=monitor_name,
                     requested=opc_path,
                 )
+
+        if role_filtered:
+            for role_prefix in allowed_role_prefixes:
+                if normalized_request == role_prefix.rstrip("/") or normalized_request.startswith(
+                    role_prefix
+                ):
+                    return OpcTagTreeDecision(
+                        allowed=True,
+                        enforce=self._policy.enforce,
+                        would_deny=False,
+                        matched_tree=role_prefix.rstrip("/"),
+                        monitor_name=None,
+                        requested=opc_path,
+                    )
 
         return OpcTagTreeDecision(
             allowed=not self._policy.enforce,

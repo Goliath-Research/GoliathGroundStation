@@ -11,8 +11,10 @@ Integrators supply a :class:`PortalSessionResolver` (SQL and/or HTTP) backed by
 
 from __future__ import annotations
 
+import asyncio
 import json
 import re
+from datetime import datetime, timezone
 import urllib.error
 import urllib.request
 from contextvars import ContextVar
@@ -171,6 +173,9 @@ class PostgresPortalSessionResolver:
                 return None
             if row.get("revoked"):
                 return None
+            expires_at_utc = _iso_or_str(row.get("expires_at_utc"))
+            if _portal_session_expired(expires_at_utc):
+                return None
             session_id = int(row["session_id"])
             roles: tuple[str, ...] = ()
             if self._fetch_roles:
@@ -184,7 +189,7 @@ class PostgresPortalSessionResolver:
                 full_name=row.get("full_name"),
                 active_scope_id=row.get("active_scope_id"),
                 organizations=organizations,
-                expires_at_utc=_iso_or_str(row.get("expires_at_utc")),
+                expires_at_utc=expires_at_utc,
                 roles=roles,
                 bearer_token=token,
             )
@@ -242,6 +247,9 @@ class HttpPortalSessionResolver:
             raise OperatorIdentityError(f"portal session HTTP resolve failed: {exc}") from exc
 
         if not payload or payload.get("revoked"):
+            return None
+        expires_at_utc = _iso_or_str(payload.get("expires_at_utc"))
+        if _portal_session_expired(expires_at_utc):
             return None
         session_id = payload.get("session_id")
         user_id = payload.get("user_id")
@@ -410,7 +418,8 @@ class OperatorSessionMiddleware:
         bearer = parse_authorization_bearer(headers.get("authorization"))
         token = _current_operator_session.set(None)
         try:
-            session = validate_operator_session(
+            session = await asyncio.to_thread(
+                validate_operator_session,
                 bearer or "",
                 policy=self.policy,
                 resolver=self.resolver,
@@ -469,6 +478,21 @@ def _organizations_tuple(raw: Any) -> tuple[Mapping[str, Any], ...]:
     if isinstance(raw, list):
         return tuple(item for item in raw if isinstance(item, Mapping))
     return ()
+
+
+def _portal_session_expired(expires_at_utc: str | None) -> bool:
+    if not expires_at_utc:
+        return False
+    text = expires_at_utc.strip()
+    if text.endswith("Z"):
+        text = f"{text[:-1]}+00:00"
+    try:
+        expires = datetime.fromisoformat(text)
+    except ValueError:
+        return False
+    if expires.tzinfo is None:
+        expires = expires.replace(tzinfo=timezone.utc)
+    return expires <= datetime.now(timezone.utc)
 
 
 def _iso_or_str(value: Any) -> str | None:
