@@ -46,7 +46,7 @@ python scripts/validate_deploy_target.py deploy/targets/goliath-ground-test.exam
 
 | Product | Role |
 | --- | --- |
-| [GoliathApp](https://github.com/Goliath-Research/GoliathApp) | Platform (RBAC, portal shell, optional DomainPrograms) |
+| [GoliathApp](https://github.com/Goliath-Research/GoliathApp) | Platform (RBAC, portal shell, DomainPrograms); Ground Station adds required programs in Phase 3 |
 | [GoliathOmics](https://github.com/Goliath-Research/GoliathOmics) | Parallel customization pattern (genomics; uses workflow workers) |
 | [GoliathWeb](https://github.com/Goliath-Research/GoliathWeb) | Public catalog (Phase 1 product page) |
 

@@ -29,7 +29,7 @@ See GoliathApp [RBAC](https://github.com/Goliath-Research/GoliathApp/blob/main/d
 
 GoliathApp stores accounts, roles, scopes, and permissions in the `"RBAC"` schema. Interactive users authenticate through **portal session** procedures (`portal.sp_session_open`, `portal.fn_session_resolve`, …) documented in [rbac.md](https://github.com/Goliath-Research/GoliathApp/blob/main/docs/rbac.md#portal-sessions).
 
-Ground station configurator APIs (today: sibling `goliath-ground-web`; Phase 4: optional portal shell) should:
+Ground station configurator APIs (today: sibling `goliath-ground-web`; Phase 4: global GoliathApp portal shell plus Ground Station–specific views) should:
 
 1. Accept a **portal bearer token** from the customer BFF or future Goliath portal chrome.
 2. Resolve the session to a user, active scope, and role set (via `portal.fn_session_resolve` or the app’s semantic client — not by calling `"RBAC"` tables directly from monitor hosts).

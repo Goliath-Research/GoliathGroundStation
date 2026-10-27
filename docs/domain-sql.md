@@ -76,4 +76,4 @@ DDL was copied from public [astra-ground-station-py](https://github.com/Goliath-
 
 - **In scope:** faithful PostgreSQL scripts, ordered apply, documentation.  
 - **Out of scope (day one):** rewriting ~350KB of config schema into GoliathApp Meta; porting Python services; GoliathApp workers on the live OPC path.  
-- **Later:** optional DomainPrograms for export campaigns; incremental migrations authored in this repo.
+- **Phase 3 (required):** DomainPrograms for sensor/actuator event logging and export / fixture / promote campaigns — see [conversion-plan.md](conversion-plan.md). Incremental migrations authored in this repo.
