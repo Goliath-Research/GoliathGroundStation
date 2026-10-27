@@ -28,6 +28,7 @@ dev = ["jsonschema>=4.20,<5"]
 
 [project.scripts]
 goliath-ground = "goliathgroundstation.cli:main"
+goliath-load-domain-schema = "goliathgroundstation.domain_schema:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/goliathgroundstation"]

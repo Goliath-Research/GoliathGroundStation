@@ -97,7 +97,7 @@
   },
   "schema": {
     "goliathapp": "per-release",
-    "domain": "none",
+    "domain": "per-release",
     "apply": "test-bed"
   },
   "operators": {

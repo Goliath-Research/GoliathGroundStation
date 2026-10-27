@@ -186,7 +186,7 @@ Status as of the plan date — mark done when a phase ships.
 - [x] GoliathGroundStation repository and product.json (Phase 1–2)
 - [x] Deploy profile: singleton gateway + OPC + N monitors (Phase 2)
 - [ ] Operator identity via GoliathApp RBAC (Phase 2–3) — **partial:** [operator-identity design](operator-identity.md) + deploy `operators` block landed; configurator session middleware and OPC tag-tree enforcement still pending (Phase 3 for ACL)
-- [ ] Domain SQL ownership for config / testlog (Phase 3)
+- [x] Domain SQL ownership for config / testlog (Phase 3) — [`database/schema/`](../database/schema/), [`docs/domain-sql.md`](domain-sql.md), [`scripts/apply_domain_schema.sh`](../scripts/apply_domain_schema.sh)
 - [ ] Optional DomainPrograms for export campaigns (Phase 3)
 - [ ] Dual activation (pub/sub wake + claim) for optional DomainProgram / event batch work — not live OPC ([GoliathApp #22](https://github.com/Goliath-Research/GoliathApp/issues/22), [GoliathGroundStation #3](https://github.com/Goliath-Research/GoliathGroundStation/issues/3), [GoliathOmics #67](https://github.com/Goliath-Research/GoliathOmics/issues/67))
 - [ ] Optional portal UI chrome (Phase 4)

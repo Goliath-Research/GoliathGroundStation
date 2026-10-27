@@ -1,0 +1,15 @@
+-- =====================================================================
+-- GoliathGroundStation — domain PostgreSQL DDL ownership
+-- =====================================================================
+-- Product home for ground-station config + testlog schemas (formerly Astra).
+--
+-- Copied from Goliath-Research/astra-ground-station-py (public):
+--   database/schema/01_schema.sql
+--   database/schema/03_programmability.sql
+-- Source commit: 2f91f4388afa8f56ab105dbe00e9b98162c18e02
+--
+-- Apply after GoliathApp platform schema (portal, RBAC, workflow core).
+-- See docs/domain-sql.md and scripts/apply_domain_schema.sh.
+-- Rewriting this baseline into GoliathApp Meta is explicitly out of scope
+-- for the first Phase 3 slice.
+-- =====================================================================

@@ -261,7 +261,7 @@
             "per-release"
           ],
           "default": "none",
-          "description": "Ground-station domain SQL (config/testlog). Phase 3; none until this repo ships domain migrations."
+          "description": "Ground-station domain SQL (config/testlog) from this repo database/schema/. per-release runs scripts/apply_domain_schema.sh after GoliathApp platform apply."
         }
       }
     },
