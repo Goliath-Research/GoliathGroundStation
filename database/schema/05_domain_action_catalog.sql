@@ -18,6 +18,10 @@
 --   p_implementation_status := 'draft'
 -- );
 --
+-- Planned ActionSpec entries (namespace=ground, level=domain, published via
+-- the goliath.action_catalogs entry point) are specified in
+-- docs/semantic-layer.md, which supersedes this list.
+--
 -- Intended rows (action_name → capability):
 --   ground.it_event_collect_buffered     → ground.it_event
 --   ground.it_event_flush_batch          → ground.it_event
