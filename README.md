@@ -8,6 +8,7 @@ GoliathApp specialization for launch-ops ground station: singleton rocket gatewa
 | --- | --- |
 | [`docs/conversion-plan.md`](docs/conversion-plan.md) | Customer deliverables, architecture, phased checklist |
 | [`docs/domain-sql.md`](docs/domain-sql.md) | Platform vs domain DDL; `config` / `testlog`; apply order |
+| [`docs/semantic-layer.md`](docs/semantic-layer.md) | Semantic namespace `ground`, ActionSpec catalog, NavTree extension |
 | [`docs/operator-identity.md`](docs/operator-identity.md) | GoliathApp portal sessions vs worker sessions; deploy `operators` hooks |
 | [`docs/domain-programs.md`](docs/domain-programs.md) | DomainPrograms scope, OPC boundary, I&T event log, program stubs |
 | [`domain_programs/`](domain_programs/) | JSON DomainProgram stubs (Phase 3; await platform compile/seed) |
